@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#131720"/>
+      <stop offset="100%" stop-color="#0B0D12"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10B981"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+    <linearGradient id="amber" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F59E0B"/>
+      <stop offset="100%" stop-color="#D97706"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="128" fill="url(#bg)"/>
+  <rect width="508" height="508" x="2" y="2" rx="126" fill="none" stroke="#222734" stroke-width="4"/>
+  <!-- Diamond / Vault icon -->
+  <path d="M256 96 L416 200 L256 416 L96 200 Z" fill="none" stroke="url(#accent)" stroke-width="24" stroke-linejoin="round"/>
+  <path d="M96 200 L416 200" stroke="#222734" stroke-width="16"/>
+  <path d="M256 96 L200 200 L256 416 L312 200 Z" fill="none" stroke="url(#amber)" stroke-width="16" stroke-linejoin="round"/>
+  <circle cx="256" cy="230" r="32" fill="#10B981" opacity="0.9"/>
+</svg>

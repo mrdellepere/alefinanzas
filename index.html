@@ -1,0 +1,1401 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#0B0D12">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="AleFinanzas">
+  <meta name="description" content="Centro de Mando Patrimonial y Bóveda Financiera Mobile-First">
+  <title>AleFinanzas - Bóveda Patrimonial & P2P</title>
+
+  <!-- PWA Manifest & Favicon -->
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" type="image/svg+xml" href="./assets/icon-192.svg">
+  <link rel="apple-touch-icon" href="./assets/icon-192.svg">
+
+  <!-- Google Fonts: Plus Jakarta Sans (UI) & JetBrains Mono (Fintech Figures) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Application Stylesheets -->
+  <link rel="stylesheet" href="./css/variables.css">
+  <link rel="stylesheet" href="./css/styles.css">
+</head>
+<body>
+
+  <!-- Root App Shell (Optimized for One-Hand Mobile & Terminal Desktop) -->
+  <div id="app-root">
+
+    <!-- Top Sticky Header -->
+    <header class="app-header">
+      <div class="brand-section">
+        <div class="brand-logo">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+            <polyline points="2 17 12 22 22 17"></polyline>
+            <polyline points="2 12 12 17 22 12"></polyline>
+          </svg>
+        </div>
+        <div class="brand-title">
+          <span>AleFinanzas</span>
+          <span class="badge-phase" id="storage-status-pill">Local Vault</span>
+        </div>
+      </div>
+
+      <!-- CriptoYA P2P Rate Widget -->
+      <div class="rate-widget-pill" id="rate-widget-pill" title="Tasa CriptoYA Binance P2P (Toca para editar manualmente)">
+        <div class="rate-pulse-dot" id="rate-pulse-dot"></div>
+        <div class="rate-info">
+          <span class="rate-label">P2P REF</span>
+          <span class="rate-value-text font-mono" id="rate-value-text">--.-- Bs</span>
+        </div>
+        <button class="btn-icon-rate-refresh" id="btn-refresh-rate" aria-label="Actualizar tasa">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="23 4 23 10 17 10"></polyline>
+            <polyline points="1 20 1 14 7 14"></polyline>
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Botón Ajustes & Backup (Fase 4) -->
+      <button class="btn-header-settings" id="btn-open-settings" aria-label="Ajustes y Respaldo" title="Ajustes y Respaldo">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+      </button>
+    </header>
+
+    <!-- Main Viewport -->
+    <main class="main-viewport">
+
+      <!-- ===================================================================
+           TAB 1: BILLETERAS (100% OPERATIVA EN FASE 1)
+           =================================================================== -->
+      <section class="tab-view-container active" id="tab-view-wallets">
+
+        <!-- Hero Card: Patrimonio Total Consolidado -->
+        <div class="hero-patrimonio-card">
+          <div class="hero-header">
+            <div class="hero-eyebrow">
+              <span>Patrimonio Consolidado</span>
+              <span class="live-indicator-tag">EN VIVO</span>
+            </div>
+            <button class="btn-toggle-eye" id="btn-toggle-eye" aria-label="Ocultar o mostrar saldos" title="Ocultar/Mostrar saldos">
+              <svg id="eye-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </button>
+          </div>
+
+          <div class="hero-amount-primary font-mono">
+            <span id="hero-total-usd">$ 0.00</span>
+            <span class="currency-code">USDT</span>
+          </div>
+
+          <div class="hero-amount-secondary font-mono">
+            <span class="approx-symbol">≈</span>
+            <span id="hero-total-ves">0.00 Bs</span>
+          </div>
+
+          <!-- Mini Asset Distribution Bar -->
+          <div class="patrimonio-distribution-bar">
+            <div class="dist-segment binance" id="dist-binance" style="width: 20%;" title="Binance Operativo USDT"></div>
+            <div class="dist-segment usdc-earn" id="dist-usdc" style="width: 20%;" title="Binance Ahorro USDC"></div>
+            <div class="dist-segment banco" id="dist-banco" style="width: 20%;" title="Banco Bs"></div>
+            <div class="dist-segment usd" id="dist-usd" style="width: 20%;" title="Efectivo USD"></div>
+            <div class="dist-segment ves-cash" id="dist-ves" style="width: 20%;" title="Efectivo Bs"></div>
+          </div>
+
+          <div class="hero-pills-row">
+            <div class="hero-mini-stat">
+              <span class="stat-dot" style="background-color: var(--color-emerald);"></span>
+              <span>Divisas / USDT: <strong class="font-mono text-emerald" id="stat-usdt-pct">--%</strong></span>
+            </div>
+            <div class="hero-mini-stat">
+              <span class="stat-dot" style="background-color: var(--color-amber);"></span>
+              <span>Bolívares: <strong class="font-mono text-amber" id="stat-ves-pct">--%</strong></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Action: P2P Conversion & Internal Transfers -->
+        <div class="quick-action-area">
+          <button class="btn-p2p-main-action" id="btn-open-p2p">
+            <div class="action-icon-circle">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="17 1 21 5 17 9"></polyline>
+                <path d="M3 11V9a4 4 0 0 1 4-4h14"></path>
+                <polyline points="7 23 3 19 7 15"></polyline>
+                <path d="M21 13v2a4 4 0 0 1-4 4H3"></path>
+              </svg>
+            </div>
+            <div class="action-text-group">
+              <span class="action-title">🔄 Cambio P2P / Transferir</span>
+              <span class="action-subtitle">Vender/comprar USDT o mover fondos entre cuentas</span>
+            </div>
+            <div class="action-chevron">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </div>
+          </button>
+        </div>
+
+        <!-- Bóveda de Saldos Reales: 5 Wallets -->
+        <div class="section-header-row">
+          <h2 class="section-title">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="4" width="20" height="16" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
+            Bóveda de Saldos Reales
+          </h2>
+          <span class="section-count-badge">5 Cuentas</span>
+        </div>
+
+        <div class="wallets-container" id="wallets-container">
+          <!-- Tarjetas renderizadas dinámicamente por app.js -->
+        </div>
+
+        <!-- Historial de Conversiones Recientes -->
+        <div class="section-header-row" style="margin-top: 24px;">
+          <h2 class="section-title">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            Conversiones P2P Recientes
+          </h2>
+          <span class="section-count-badge">Historial</span>
+        </div>
+
+        <div class="history-list" id="transactions-container">
+          <!-- Lista de transacciones renderizada por app.js -->
+        </div>
+
+      </section>
+
+      <!-- ===================================================================
+           TAB 2: PAPELERÍA (A&R PRINTS) - FASE 2
+           =================================================================== -->
+      <section class="tab-view-container" id="tab-view-papeleria">
+
+        <!-- Sub-header A&R Prints & Total en Fondos -->
+        <div class="papeleria-header-card">
+          <div class="papeleria-header-title">
+            <h2>A&amp;R Prints</h2>
+            <span>Cierre Diario &amp; Regla de los 6 Fondos</span>
+          </div>
+          <div style="text-align: right;">
+            <div style="font-size: 0.68rem; color: var(--color-text-muted); font-weight: 600; text-transform: uppercase;">Total en Fondos</div>
+            <div class="font-mono text-emerald" id="funds-total-usdt" style="font-size: 1.25rem; font-weight: 800;">$ 0.00</div>
+            <div class="font-mono text-amber" id="funds-total-ves" style="font-size: 0.72rem;">≈ 0.00 Bs</div>
+          </div>
+        </div>
+
+        <!-- Tarjeta Maestra: Balance Exclusivo de la Papelería (A&R Prints) -->
+        <div id="business-vault-summary-container">
+          <!-- Renderizado dinámicamente por app.js -->
+        </div>
+
+        <!-- Bóveda de los 6 Fondos (Sobres Virtuales) -->
+        <div class="section-header-row">
+          <h2 class="section-title">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+            Bóveda de los 6 Fondos (Sobres)
+          </h2>
+          <span class="section-count-badge">100% Ventas</span>
+        </div>
+
+        <!-- Barra de Acción Rápida: Ejecutar Pase a Binance Ahorro (USDC - Earn) - Fase 2.5 -->
+        <div class="earn-quick-action-banner" id="earn-quick-action-banner">
+          <div class="earn-banner-top">
+            <div class="earn-banner-info">
+              <div class="earn-lock-badge">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+              </div>
+              <div class="earn-banner-titles">
+                <span class="earn-banner-title">Fondos de Ahorro Fijo (USDC)</span>
+                <span class="earn-banner-desc">Local (8%) + Vivienda y Servicios (18%) + Máquinas (10%) = 36%</span>
+              </div>
+            </div>
+            <div class="earn-banner-accumulated font-mono">
+              <span class="earn-accum-label">Acumulado</span>
+              <span class="earn-accum-val" id="earn-savings-accum-val">$ 0.00</span>
+            </div>
+          </div>
+          <button type="button" class="btn-trigger-earn-pass font-mono" id="btn-trigger-earn-pass">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
+            <span>⚡ Ejecutar Pase a USDC Earn (1:1)</span>
+          </button>
+        </div>
+
+        <div class="funds-grid" id="funds-grid-container">
+          <!-- Tarjetas de los 6 Fondos renderizadas por app.js -->
+        </div>
+
+        <!-- Formulario Principal: Registrar Cierre del Día (Basado en POS) -->
+        <div class="closure-main-card">
+          <div class="closure-card-header">
+            <div class="closure-card-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color: var(--color-amber);"><rect x="2" y="3" width="20" height="14" rx="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+              <span>Registrar Cierre del Día (POS)</span>
+            </div>
+            <div>
+              <input type="date" class="form-input font-mono" id="closure-date" style="padding: 4px 8px; font-size: 0.75rem; width: auto;" required>
+            </div>
+          </div>
+
+          <form id="form-daily-closure">
+            <!-- Inputs del POS -->
+            <div class="closure-inputs-grid">
+              <!-- Input 1: Ventas Brutas Totales (Bs) -->
+              <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label" for="closure-sales-gross-ves">Ventas Brutas Totales (Bs)</label>
+                <div class="input-with-addons">
+                  <input type="number" step="any" min="0.01" class="form-input font-mono" id="closure-sales-gross-ves" placeholder="Ej. 12880.00" required>
+                  <span class="input-addon-currency">Bs</span>
+                </div>
+              </div>
+
+              <!-- Input 2: Ganancia Neta del POS (USDT) -->
+              <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label" for="closure-net-profit-usdt">Ganancia Neta POS (USDT)</label>
+                <div class="input-with-addons">
+                  <input type="number" step="any" min="0" class="form-input font-mono" id="closure-net-profit-usdt" placeholder="Ej. 9.83" required>
+                  <span class="input-addon-currency">USDT</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tasa de Cierre (Bs/USDT) -->
+            <div class="form-group" style="margin-top: 12px;">
+              <div class="form-label-row">
+                <label class="form-label" for="closure-rate-input">Tasa de Cierre (Bs/USDT)</label>
+                <button type="button" class="form-helper-val" id="btn-sync-closure-rate" style="background:none;border:none;cursor:pointer;color:var(--color-amber);font-weight:600;">
+                  ⟳ Sincronizar CriptoYA
+                </button>
+              </div>
+              <div class="input-with-addons">
+                <input type="number" step="any" min="0.01" class="form-input font-mono" id="closure-rate-input" placeholder="0.00" required>
+                <span class="input-addon-currency">Bs/USDT</span>
+              </div>
+            </div>
+
+            <!-- Barra de Meta Diaria de Ventas ($24.50 USDT) -->
+            <div class="daily-goal-card">
+              <div class="daily-goal-info-row">
+                <span class="daily-goal-label">Meta Diaria de Ventas Brutas ($24.50 USDT):</span>
+                <span class="daily-goal-status font-mono text-emerald" id="daily-goal-status">$0.00 (0%)</span>
+              </div>
+              <div class="daily-goal-track">
+                <div class="daily-goal-fill" id="daily-goal-fill" style="width: 0%;"></div>
+              </div>
+            </div>
+
+            <!-- Caja de Métricas POS en Tiempo Real -->
+            <div class="pos-metrics-banner">
+              <div class="pos-metrics-banner-title">Cálculos en Tiempo Real del POS</div>
+              <div class="pos-metrics-row">
+                <div class="pos-metric-item">
+                  <span class="pos-metric-title">Ventas Brutas</span>
+                  <span class="pos-metric-value font-mono text-emerald" id="pos-metric-gross-usdt">$0.00</span>
+                  <span class="font-mono text-amber" id="pos-metric-gross-ves" style="font-size:0.65rem;">0.00 Bs</span>
+                </div>
+
+                <div class="pos-metric-item">
+                  <span class="pos-metric-title">Costo Directo POS</span>
+                  <span class="pos-metric-value font-mono text-coral" id="pos-metric-cost-usdt">$0.00</span>
+                  <span class="font-mono text-muted" id="pos-metric-cost-ves" style="font-size:0.65rem; color:var(--color-text-muted);">0.00 Bs</span>
+                </div>
+
+                <div class="pos-metric-item">
+                  <span class="pos-metric-title">Margen Neto</span>
+                  <span class="pos-metric-value font-mono text-steel" id="pos-metric-margin-pct">0.0%</span>
+                  <span style="font-size:0.65rem; color:var(--color-text-muted);">Operativo</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Motor Automático de la "Regla de los 6 Fondos" (Distribución en vivo) -->
+            <div class="funds-distribution-box">
+              <div class="funds-dist-header">
+                <span class="funds-dist-title">Distribución Automática de los 6 Fondos</span>
+                <span class="badge-mono" style="font-size:0.65rem; color:var(--color-emerald); font-weight:700;">100.0%</span>
+              </div>
+              <div class="funds-dist-list" id="funds-dist-live-list">
+                <!-- Se actualiza interactivamente a medida que el usuario tipea -->
+              </div>
+            </div>
+
+            <!-- Asistente de División Cripto del Cierre (USDT vs USDC) - Fase 2.5 -->
+            <div class="crypto-assistant-card">
+              <div class="crypto-assistant-header">
+                <span class="crypto-assistant-title">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color: #06B6D4;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                  Distribución Cripto del Cierre (USDT vs USDC)
+                </span>
+                <span class="badge-mono" style="font-size:0.65rem; color:#06B6D4; font-weight:700;">GUÍA EJECUTIVA</span>
+              </div>
+
+              <div class="crypto-blocks-grid">
+                <!-- Bloque 1: USDC Binance Earn (36.0%) -->
+                <div class="crypto-block usdc-box">
+                  <div class="crypto-block-head">
+                    <span class="crypto-block-label">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                      🔒 Monto a Convertir a USDC (Binance Earn)
+                    </span>
+                    <span class="crypto-block-pct-pill font-mono">36.0%</span>
+                  </div>
+                  <div class="crypto-block-amount-main font-mono" id="crypto-guide-usdc-val">
+                    $ 0.00 USDC
+                  </div>
+                  <div style="font-size: 0.68rem; color: var(--color-text-secondary); margin-bottom: 2px;">
+                    Cambiar a USDC y meter en Earn (Compromisos Fijos - Cuota fija: $41.50/sem · $166.00/mes):
+                  </div>
+                  <div class="crypto-subbreakdown-row font-mono">
+                    <div class="crypto-subitem">
+                      <span>• Alquiler Local (8.0% - $50):</span>
+                      <strong id="crypto-sub-local">$0.00</strong>
+                    </div>
+                    <div class="crypto-subitem">
+                      <span>• Vivienda y Servicios Fijos (18.0% - $116):</span>
+                      <strong id="crypto-sub-vivienda">$0.00</strong>
+                    </div>
+                    <div class="crypto-subitem">
+                      <span>• Máquinas &amp; Emergencias (10.0%):</span>
+                      <strong id="crypto-sub-maquinas">$0.00</strong>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Bloque 2: USDT Operativo + Personal (64.0%) -->
+                <div class="crypto-block usdt-box">
+                  <div class="crypto-block-head">
+                    <span class="crypto-block-label">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                      ⚡ Monto a Mantener en USDT (Operativo + Personal)
+                    </span>
+                    <span class="crypto-block-pct-pill font-mono">64.0%</span>
+                  </div>
+                  <div class="crypto-block-amount-main font-mono" id="crypto-guide-usdt-val">
+                    $ 0.00 USDT
+                  </div>
+                  <div class="crypto-subbreakdown-row font-mono">
+                    <div class="crypto-subitem">
+                      <span><strong>• Capital de Trabajo (40.0%):</strong> Reposición</span>
+                      <strong class="text-steel" id="crypto-sub-reposicion">$0.00</strong>
+                    </div>
+                    <div class="crypto-subitem">
+                      <span><strong>• Cuenta Personal Libre (24.0%):</strong> Comida (19.5%) + Ocio (4.5%)</span>
+                      <strong class="text-emerald" id="crypto-sub-personal">$0.00</strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Destino del Dinero en mis Billeteras Reales -->
+            <div class="destination-mode-card">
+              <div class="dest-mode-title">¿Dónde ingresó el dinero de hoy?</div>
+              <div class="dest-options-pills">
+                <button type="button" class="btn-dest-pill active" id="btn-dest-banco" data-mode="banco_direct">
+                  🏛️ Todo a Banco (Bs)
+                </button>
+                <button type="button" class="btn-dest-pill" id="btn-dest-mixed" data-mode="mixed">
+                  ⚡ Distribución Mixta
+                </button>
+              </div>
+
+              <!-- Inputs de Distribución Mixta (Opcional) -->
+              <div class="mixed-inputs-wrapper hidden" id="mixed-inputs-container">
+                <div class="mixed-input-row">
+                  <span class="mixed-input-label">Banco / Pago Móvil (Bs):</span>
+                  <input type="number" step="any" min="0" class="form-input font-mono mixed-inflow-input" id="inflow-banco-ves" placeholder="0.00" value="0.00">
+                </div>
+                <div class="mixed-input-row">
+                  <span class="mixed-input-label">Efectivo Bolívares (Bs):</span>
+                  <input type="number" step="any" min="0" class="form-input font-mono mixed-inflow-input" id="inflow-ves-cash" placeholder="0.00" value="0.00">
+                </div>
+                <div class="mixed-input-row">
+                  <span class="mixed-input-label">Efectivo Divisas ($ USD):</span>
+                  <input type="number" step="any" min="0" class="form-input font-mono mixed-inflow-input" id="inflow-usd-cash" placeholder="0.00" value="0.00">
+                </div>
+                <div class="mixed-input-row">
+                  <span class="mixed-input-label">Binance Operativo (USDT):</span>
+                  <input type="number" step="any" min="0" class="form-input font-mono mixed-inflow-input" id="inflow-binance-usdt" placeholder="0.00" value="0.00">
+                </div>
+                <div class="mixed-input-row">
+                  <span class="mixed-input-label">Binance Ahorro (USDC):</span>
+                  <input type="number" step="any" min="0" class="form-input font-mono mixed-inflow-input" id="inflow-binance-usdc" placeholder="0.00" value="0.00">
+                </div>
+
+                <div class="mixed-diff-alert balanced" id="mixed-balance-status">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  <span>Cuadre exacto con las ventas del día.</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Notas del Cierre -->
+            <div class="form-group">
+              <label class="form-label" for="closure-notes">Notas / Observaciones del Día (Opcional)</label>
+              <input type="text" class="form-input" id="closure-notes" placeholder="Ej. Buen flujo de impresiones y anillados">
+            </div>
+
+            <!-- Botón de Envío -->
+            <button type="submit" class="btn-primary-action btn-amber-action font-mono" id="btn-save-closure">
+              <span>Guardar Cierre Diario</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </button>
+          </form>
+        </div>
+
+        <!-- Historial de Cierres de Papelería -->
+        <div class="section-header-row">
+          <h2 class="section-title">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            Historial de Cierres A&amp;R Prints
+          </h2>
+          <span class="section-count-badge" id="closure-count-badge">0 Cierres</span>
+        </div>
+
+        <div class="history-list" id="closure-history-container">
+          <!-- Renderizado dinámicamente por app.js -->
+        </div>
+
+      </section>
+
+      <!-- ===================================================================
+           TAB 3: MOVIMIENTOS (INGRESOS EXTERNOS & EGRESOS/GASTOS) - FASE 3
+           =================================================================== -->
+      <section class="tab-view-container" id="tab-view-movimientos">
+
+        <!-- Header de Movimientos -->
+        <div class="mov-header-card">
+          <div class="mov-header-title">
+            <h2>Libro de Movimientos</h2>
+            <span>Ingresos externos, egresos de fondos y flujo de caja</span>
+          </div>
+          <div class="mov-header-badge font-mono">
+            <span class="pulse-dot-green"></span>
+            <span>Centro de Movimientos</span>
+          </div>
+        </div>
+
+        <!-- Segmented Control de Tipo de Movimiento -->
+        <div class="mov-type-segmented-control">
+          <button type="button" class="btn-mov-type active-income" id="btn-mov-type-income">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            <span>➕ Nuevo Ingreso Externo</span>
+          </button>
+          <button type="button" class="btn-mov-type" id="btn-mov-type-expense">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            <span>➖ Registrar Gasto / Salida</span>
+          </button>
+        </div>
+
+        <!-- FORMULARIO 1: NUEVO INGRESO EXTERNO -->
+        <div class="mov-form-card" id="mov-form-income-card">
+          <div class="mov-form-header">
+            <div class="mov-form-icon-wrap income">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+            </div>
+            <div>
+              <h3 class="mov-form-title">Ingreso Extra / Personal</h3>
+              <span class="mov-form-desc">Suma directo a tu saldo libre personal sin pasar por los 6 fondos</span>
+            </div>
+          </div>
+
+          <form id="form-new-income">
+            <!-- Concepto -->
+            <div class="form-group">
+              <label class="form-label" for="mov-income-concept">Concepto o Descripción</label>
+              <input type="text" class="form-input" id="mov-income-concept" placeholder="Ej. Venta servicio digital, recarga, proyecto freelance" required>
+            </div>
+
+            <!-- Categoría -->
+            <div class="form-group">
+              <label class="form-label" for="mov-income-category">Categoría de Ingreso</label>
+              <div class="custom-select-wrap">
+                <select class="form-select font-mono" id="mov-income-category" required>
+                  <option value="Servicios Digitales / Streaming">📺 Servicios Digitales / Streaming</option>
+                  <option value="Comisiones / Recargas">⚡ Comisiones / Recargas</option>
+                  <option value="Proyectos / Freelance">💻 Proyectos / Freelance</option>
+                  <option value="Otros Ingresos" selected>🪙 Otros Ingresos Personales</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Moneda y Monto -->
+            <div class="form-group">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                <label class="form-label" style="margin-bottom:0;">Monto a Ingresar</label>
+                <div class="currency-toggle-pills">
+                  <button type="button" class="btn-curr-toggle active" id="btn-income-curr-usd">USD / USDT</button>
+                  <button type="button" class="btn-curr-toggle" id="btn-income-curr-ves">Bs (Bolívares)</button>
+                </div>
+              </div>
+              <div class="input-with-addons">
+                <input type="number" step="any" min="0.01" class="form-input font-mono" id="mov-income-amount" placeholder="0.00" required>
+                <span class="input-addon-currency font-mono" id="mov-income-curr-addon">USD</span>
+              </div>
+            </div>
+
+            <!-- Tasa y Equivalente en Vivo -->
+            <div class="mov-conversion-preview-row">
+              <div class="mov-equiv-box">
+                <span class="mov-equiv-label">Equivalente calculado:</span>
+                <span class="mov-equiv-val font-mono" id="mov-income-equiv-preview">≈ 0.00 Bs</span>
+              </div>
+              <div class="mov-rate-box">
+                <span class="mov-rate-label">Tasa:</span>
+                <input type="number" step="any" class="form-input-sm font-mono" id="mov-income-rate" title="Tasa editable">
+                <span class="font-mono" style="font-size:0.7rem; color:var(--color-text-dim);">Bs</span>
+              </div>
+            </div>
+
+            <!-- Billetera Destino -->
+            <div class="form-group" style="margin-top:14px;">
+              <label class="form-label" for="mov-income-wallet">¿A qué billetera entra el dinero?</label>
+              <div class="custom-select-wrap">
+                <select class="form-select font-mono" id="mov-income-wallet" required>
+                  <!-- Cargado dinámicamente -->
+                </select>
+              </div>
+              <div class="field-hint" style="margin-top:5px; font-size:0.72rem; color:var(--color-text-muted);">
+                💡 Se acreditará en esta cuenta e incrementará tu <b>👤 USDT Libre Personal</b>.
+              </div>
+            </div>
+
+            <!-- Botón Submit -->
+            <button type="submit" class="btn-primary-action btn-submit-income font-mono" id="btn-submit-income">
+              <span>➕ Guardar Ingreso Externo</span>
+            </button>
+          </form>
+        </div>
+
+        <!-- FORMULARIO 2: REGISTRAR GASTO / SALIDA -->
+        <div class="mov-form-card hidden" id="mov-form-expense-card">
+          <div class="mov-form-header">
+            <div class="mov-form-icon-wrap expense">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline><polyline points="17 18 23 18 23 12"></polyline></svg>
+            </div>
+            <div>
+              <h3 class="mov-form-title">Registrar Gasto o Salida</h3>
+              <span class="mov-form-desc">Descuenta simultáneamente de tu billetera real y del sobre virtual</span>
+            </div>
+          </div>
+
+          <form id="form-new-expense">
+            <!-- Concepto -->
+            <div class="form-group">
+              <label class="form-label" for="mov-expense-concept">Concepto o Motivo del Gasto</label>
+              <input type="text" class="form-input" id="mov-expense-concept" placeholder="Ej. Compra 2 resmas y tinta, mercado semanal, almuerzo" required>
+            </div>
+
+            <!-- Moneda y Monto -->
+            <div class="form-group">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                <label class="form-label" style="margin-bottom:0;">Monto del Gasto</label>
+                <div class="currency-toggle-pills">
+                  <button type="button" class="btn-curr-toggle active" id="btn-expense-curr-usd">USD / USDT</button>
+                  <button type="button" class="btn-curr-toggle" id="btn-expense-curr-ves">Bs (Bolívares)</button>
+                </div>
+              </div>
+              <div class="input-with-addons">
+                <input type="number" step="any" min="0.01" class="form-input font-mono" id="mov-expense-amount" placeholder="0.00" required>
+                <span class="input-addon-currency font-mono" id="mov-expense-curr-addon">USD</span>
+              </div>
+            </div>
+
+            <!-- Tasa y Equivalente en Vivo -->
+            <div class="mov-conversion-preview-row">
+              <div class="mov-equiv-box">
+                <span class="mov-equiv-label">Equivalente calculado:</span>
+                <span class="mov-equiv-val font-mono" id="mov-expense-equiv-preview">≈ 0.00 Bs</span>
+              </div>
+              <div class="mov-rate-box">
+                <span class="mov-rate-label">Tasa:</span>
+                <input type="number" step="any" class="form-input-sm font-mono" id="mov-expense-rate" title="Tasa editable">
+                <span class="font-mono" style="font-size:0.7rem; color:var(--color-text-dim);">Bs</span>
+              </div>
+            </div>
+
+            <!-- Billetera Real de Origen -->
+            <div class="form-group" style="margin-top:14px;">
+              <label class="form-label" for="mov-expense-wallet">¿De qué cuenta real salió el dinero?</label>
+              <div class="custom-select-wrap">
+                <select class="form-select font-mono" id="mov-expense-wallet" required>
+                  <!-- Cargado dinámicamente -->
+                </select>
+              </div>
+            </div>
+
+            <!-- Fondo / Presupuesto a Descontar -->
+            <div class="form-group">
+              <label class="form-label" for="mov-expense-fund">¿A qué Fondo / Sobre se carga este gasto?</label>
+              <div class="custom-select-wrap">
+                <select class="form-select font-mono" id="mov-expense-fund" required>
+                  <optgroup label="🏢 A&amp;R PRINTS (NEGOCIO)">
+                    <option value="fondo_reposicion" selected>📦 Reposición Mercancía e Insumos (40%)</option>
+                    <option value="fondo_alquiler_local">🏠 Alquiler del Local ($50 - 8%)</option>
+                    <option value="fondo_maquinas_emergencia">🛠️ Máquinas y Emergencia (10%)</option>
+                  </optgroup>
+                  <optgroup label="👤 GASTOS PERSONALES &amp; HOGAR">
+                    <option value="fondo_comida_hogar">🛒 Comida y Mercado del Hogar (19.5%)</option>
+                    <option value="fondo_alquiler_vivienda">🏡 Vivienda y Servicios Fijos ($116)</option>
+                    <option value="fondo_entretenimiento">🎉 Entretenimiento (4.5%)</option>
+                    <option value="libre_personal">👤 Saldo Libre Personal General (Sin fondo específico)</option>
+                  </optgroup>
+                </select>
+              </div>
+              <div class="field-hint" id="mov-expense-fund-hint" style="margin-top:5px; font-size:0.72rem; color:var(--color-text-muted);">
+                Se descontará del capital de trabajo de la papelería.
+              </div>
+            </div>
+
+            <!-- Botón Submit -->
+            <button type="submit" class="btn-primary-action btn-submit-expense font-mono" id="btn-submit-expense">
+              <span>➖ Confirmar Gasto / Salida</span>
+            </button>
+          </form>
+        </div>
+
+        <!-- SECCIÓN: HISTORIAL UNIFICADO Y FILTRABLE DE MOVIMIENTOS -->
+        <div class="section-header-row" style="margin-top: 26px;">
+          <h2 class="section-title">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+            Historial de Movimientos
+          </h2>
+          <span class="section-count-badge" id="mov-total-count-badge">0 registros</span>
+        </div>
+
+        <!-- Filtros rápidos por píldora -->
+        <div class="mov-filters-bar" id="mov-filters-bar">
+          <button type="button" class="mov-filter-pill active" data-filter="all">Todos</button>
+          <button type="button" class="mov-filter-pill" data-filter="ingreso">➕ Ingresos</button>
+          <button type="button" class="mov-filter-pill" data-filter="gasto_papeleria">🏢 Papelería</button>
+          <button type="button" class="mov-filter-pill" data-filter="gasto_personal">👤 Personales</button>
+          <button type="button" class="mov-filter-pill" data-filter="p2p">🔄 P2P / 1:1</button>
+        </div>
+
+        <!-- Lista Feed de Movimientos -->
+        <div class="history-list" id="mov-unified-history-list">
+          <!-- Renderizado dinámicamente por app.js -->
+        </div>
+
+      </section>
+
+      <!-- ===================================================================
+           TAB 4: ESTADO DE RESULTADOS (P&L DUAL) - FASE 4
+           =================================================================== -->
+      <section class="tab-view-container" id="tab-view-pnl">
+
+        <!-- Cabecera PnL & Selector de Período Dual -->
+        <div class="pnl-header-card">
+          <div class="pnl-header-top">
+            <div class="pnl-title-group">
+              <h2>Estado de Resultados (P&amp;L)</h2>
+              <span>Rendimiento neto operativo y flujo consolidado</span>
+            </div>
+            <span class="pnl-badge font-mono">EN VIVO</span>
+          </div>
+
+          <!-- Segmented Control Dual: Semanal vs Mensual -->
+          <div class="pnl-period-segmented-control">
+            <button type="button" class="btn-pnl-period-type active" id="btn-pnl-period-week">
+              📅 Vista Semanal (Lun - Dom)
+            </button>
+            <button type="button" class="btn-pnl-period-type" id="btn-pnl-period-month">
+              🗓️ Vista Mensual (Mes Completo)
+            </button>
+          </div>
+
+          <!-- Navegador Temporal (< Anterior | Periodo | Siguiente >) -->
+          <div class="pnl-period-navigator">
+            <button type="button" class="btn-pnl-nav font-mono" id="btn-pnl-nav-prev" aria-label="Período anterior">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+              <span>Anterior</span>
+            </button>
+            <div class="pnl-nav-label font-mono" id="pnl-nav-period-label">
+              --
+            </div>
+            <button type="button" class="btn-pnl-nav font-mono" id="btn-pnl-nav-next" aria-label="Período siguiente">
+              <span>Siguiente</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- ===============================================================
+             ESTADO DE RESULTADOS EN CASCADA DE 3 NIVELES
+             =============================================================== -->
+        <div class="pnl-cascade-container">
+
+          <!-- NIVEL 1: RENDIMIENTO OPERATIVO PAPELERÍA (A&R PRINTS) -->
+          <div class="pnl-tier-card tier-1">
+            <div class="pnl-tier-header">
+              <div class="pnl-tier-tag font-mono">NIVEL 1 · OPERATIVO</div>
+              <h3 class="pnl-tier-title">Rendimiento Papelería (A&amp;R Prints)</h3>
+            </div>
+
+            <!-- (+) Ventas Brutas -->
+            <div class="pnl-row">
+              <div class="pnl-row-label">
+                <span class="pnl-sign plus font-mono">(+)</span>
+                <span>Ventas Brutas del Período</span>
+              </div>
+              <div class="pnl-row-values font-mono">
+                <span class="pnl-val-usd text-emerald font-bold" id="pnl-n1-gross-sales-usd">$ 0.00</span>
+                <span class="pnl-val-ves text-amber" id="pnl-n1-gross-sales-ves">≈ 0.00 Bs</span>
+              </div>
+            </div>
+
+            <!-- (-) Costo Directo / Insumos POS -->
+            <div class="pnl-row">
+              <div class="pnl-row-label">
+                <span class="pnl-sign minus font-mono">(-)</span>
+                <span>Costo Directo / Insumos POS (COGS)</span>
+              </div>
+              <div class="pnl-row-values font-mono">
+                <span class="pnl-val-usd text-coral font-bold" id="pnl-n1-cogs-usd">-$ 0.00</span>
+                <span class="pnl-val-ves text-dim" id="pnl-n1-cogs-ves">≈ 0.00 Bs</span>
+              </div>
+            </div>
+
+            <!-- (=) Margen Bruto Operativo -->
+            <div class="pnl-row subtotal">
+              <div class="pnl-row-label">
+                <span class="pnl-sign equals font-mono">(=)</span>
+                <span>Margen Bruto Operativo</span>
+                <span class="pnl-pct-badge font-mono" id="pnl-n1-margin-pct">0.0%</span>
+              </div>
+              <div class="pnl-row-values font-mono">
+                <span class="pnl-val-usd font-bold" id="pnl-n1-gross-margin-usd">$ 0.00</span>
+                <span class="pnl-val-ves text-amber" id="pnl-n1-gross-margin-ves">≈ 0.00 Bs</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- NIVEL 2: UTILIDAD NETA DEL NEGOCIO -->
+          <div class="pnl-tier-card tier-2">
+            <div class="pnl-tier-header">
+              <div class="pnl-tier-tag font-mono">NIVEL 2 · RESERVAS FIJAS</div>
+              <h3 class="pnl-tier-title">Compromisos Fijos &amp; Utilidad Neta</h3>
+            </div>
+
+            <!-- (-) Gastos Fijos y Reservas (Local 8% + Máquinas 10%) -->
+            <div class="pnl-row">
+              <div class="pnl-row-label">
+                <span class="pnl-sign minus font-mono">(-)</span>
+                <span>Alquiler Local (8%) + Máquinas (10%)</span>
+              </div>
+              <div class="pnl-row-values font-mono">
+                <span class="pnl-val-usd text-coral font-bold" id="pnl-n2-fixed-reserves-usd">-$ 0.00</span>
+                <span class="pnl-val-ves text-dim" id="pnl-n2-fixed-reserves-ves">≈ 0.00 Bs</span>
+              </div>
+            </div>
+
+            <!-- (=) Utilidad Neta Libre de la Papelería -->
+            <div class="pnl-row subtotal">
+              <div class="pnl-row-label">
+                <span class="pnl-sign equals font-mono">(=)</span>
+                <span>Utilidad Neta Libre Papelería</span>
+                <span class="pnl-pct-badge font-mono" id="pnl-n2-net-pct">42.0%</span>
+              </div>
+              <div class="pnl-row-values font-mono">
+                <span class="pnl-val-usd font-bold text-steel" id="pnl-n2-net-usd">$ 0.00</span>
+                <span class="pnl-val-ves text-amber" id="pnl-n2-net-ves">≈ 0.00 Bs</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- NIVEL 3: FLUJO CONSOLIDADO INTEGRAL (PAPELERÍA + OTROS NEGOCIOS VS GASTOS) -->
+          <div class="pnl-tier-card tier-3">
+            <div class="pnl-tier-header">
+              <div class="pnl-tier-tag font-mono">NIVEL 3 · CONSOLIDADO</div>
+              <h3 class="pnl-tier-title">Flujo Integral (Papelería + Otros Ingresos - Gastos)</h3>
+            </div>
+
+            <!-- (+) Utilidad Neta Papelería -->
+            <div class="pnl-row">
+              <div class="pnl-row-label">
+                <span class="pnl-sign plus font-mono">(+)</span>
+                <span>Utilidad Papelería (Sueldo / Personal)</span>
+              </div>
+              <div class="pnl-row-values font-mono">
+                <span class="pnl-val-usd text-steel font-bold" id="pnl-n3-paper-profit-usd">+$ 0.00</span>
+                <span class="pnl-val-ves text-dim" id="pnl-n3-paper-profit-ves">≈ 0.00 Bs</span>
+              </div>
+            </div>
+
+            <!-- (+) Otros Ingresos Externos -->
+            <div class="pnl-row">
+              <div class="pnl-row-label">
+                <span class="pnl-sign plus font-mono">(+)</span>
+                <span>Otros Ingresos Externos (Inc. Domingos)</span>
+              </div>
+              <div class="pnl-row-values font-mono">
+                <span class="pnl-val-usd text-emerald font-bold" id="pnl-n3-other-income-usd">+$ 0.00</span>
+                <span class="pnl-val-ves text-amber" id="pnl-n3-other-income-ves">≈ 0.00 Bs</span>
+              </div>
+            </div>
+
+            <!-- Sub-desglose categorías de otros ingresos -->
+            <div class="pnl-sub-breakdown font-mono" id="pnl-n3-other-income-breakdown">
+              <!-- Renderizado dinámicamente -->
+            </div>
+
+            <!-- (-) Gastos Personales Ejecutados -->
+            <div class="pnl-row" style="margin-top: 8px;">
+              <div class="pnl-row-label">
+                <span class="pnl-sign minus font-mono">(-)</span>
+                <span>Gastos Personales Ejecutados</span>
+              </div>
+              <div class="pnl-row-values font-mono">
+                <span class="pnl-val-usd text-coral font-bold" id="pnl-n3-personal-expenses-usd">-$ 0.00</span>
+                <span class="pnl-val-ves text-dim" id="pnl-n3-personal-expenses-ves">≈ 0.00 Bs</span>
+              </div>
+            </div>
+
+            <!-- Sub-desglose gastos personales -->
+            <div class="pnl-sub-breakdown font-mono" id="pnl-n3-personal-expense-breakdown">
+              <!-- Renderizado dinámicamente -->
+            </div>
+
+            <!-- (=) FLUJO DE CAJA NETO / AHORRO REAL DEL PERÍODO -->
+            <div class="pnl-cashflow-total-card" id="pnl-cashflow-total-card">
+              <div class="pnl-cashflow-top">
+                <span class="pnl-cashflow-label font-mono">FLUJO DE CAJA NETO / AHORRO REAL</span>
+                <span class="pnl-cashflow-status-pill font-mono" id="pnl-cashflow-status-pill">SUPERÁVIT</span>
+              </div>
+              <div class="pnl-cashflow-amounts">
+                <div class="pnl-cashflow-usd font-mono" id="pnl-cashflow-total-usd">$ 0.00</div>
+                <div class="pnl-cashflow-ves font-mono" id="pnl-cashflow-total-ves">≈ 0.00 Bs</div>
+              </div>
+              <div class="pnl-cashflow-desc" id="pnl-cashflow-desc">
+                Ahorro neto consolidado disponible en el período.
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ===============================================================
+             INDICADORES DE RENDIMIENTO (KPIS) Y RASTREADOR DE METAS
+             =============================================================== -->
+        <div class="section-header-row" style="margin-top: 26px;">
+          <h2 class="section-title">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+            Indicadores &amp; Metas Clave
+          </h2>
+          <span class="section-count-badge">Fase 4</span>
+        </div>
+
+        <div class="pnl-kpis-grid">
+
+          <!-- KPI 1: Meta Operativa de la Papelería ($20/día hábil) -->
+          <div class="pnl-kpi-card">
+            <div class="pnl-kpi-header">
+              <span class="pnl-kpi-title">🎯 Meta Ventas Papelería</span>
+              <span class="pnl-kpi-val font-mono" id="kpi-sales-goal-status">$ 0 / $ 0</span>
+            </div>
+            <div class="pnl-kpi-progress-bar">
+              <div class="pnl-kpi-progress-fill" id="kpi-sales-goal-fill" style="width: 0%;"></div>
+            </div>
+            <div class="pnl-kpi-meta font-mono">
+              <span id="kpi-sales-goal-pct">0% de la meta</span>
+              <span id="kpi-sales-worked-days">0 días trabajados</span>
+            </div>
+            <div class="pnl-kpi-note font-mono" id="kpi-sales-avg-note">
+              Promedio: $0.00/día hábil trabajado (domingos no bajan promedio).
+            </div>
+          </div>
+
+          <!-- KPI 2: Cobertura de Alquileres y Servicios Fijos ($166/mes) -->
+          <div class="pnl-kpi-card">
+            <div class="pnl-kpi-header">
+              <span class="pnl-kpi-title">🏠 Cobertura Alquileres &amp; Servicios</span>
+              <span class="pnl-kpi-val font-mono" id="kpi-rent-coverage-status">$ 0 / $ 166</span>
+            </div>
+            <div class="pnl-kpi-progress-bar">
+              <div class="pnl-kpi-progress-fill rent-fill" id="kpi-rent-coverage-fill" style="width: 0%;"></div>
+            </div>
+            <div class="pnl-kpi-meta font-mono">
+              <span id="kpi-rent-coverage-pct">0% asegurado</span>
+              <span id="kpi-rent-remaining">Faltan $166.00</span>
+            </div>
+            <div class="pnl-kpi-note font-mono">
+              Local: $50 meta · Vivienda &amp; Servicios: $116 meta (USDC Binance Earn).
+            </div>
+          </div>
+
+          <!-- KPI 3: Peso de Ingresos (Papelería vs Otros Negocios) -->
+          <div class="pnl-kpi-card">
+            <div class="pnl-kpi-header">
+              <span class="pnl-kpi-title">⚡ Peso de Ingresos</span>
+              <span class="pnl-kpi-val font-mono" id="kpi-income-ratio-status">0% / 0%</span>
+            </div>
+            <div class="pnl-split-bar">
+              <div class="split-fill-paper" id="kpi-ratio-paper-fill" style="width: 50%;"></div>
+              <div class="split-fill-other" id="kpi-ratio-other-fill" style="width: 50%;"></div>
+            </div>
+            <div class="pnl-kpi-meta font-mono">
+              <span style="color:#60A5FA;">🏢 Papelería: <b id="kpi-ratio-paper-pct">50%</b></span>
+              <span style="color:#34D399;">⚡ Otros: <b id="kpi-ratio-other-pct">50%</b></span>
+            </div>
+            <div class="pnl-kpi-note font-mono">
+              Proporción de generación neta en el período seleccionado.
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ===============================================================
+             GRÁFICA VISUAL MINIMALISTA (COMPARATIVA PILARES)
+             =============================================================== -->
+        <div class="pnl-chart-card">
+          <div class="pnl-chart-header">
+            <h3 class="pnl-chart-title">📊 Comparativa de Flujo de Caja</h3>
+            <span class="font-mono text-dim" style="font-size: 0.72rem;">Ventas vs Otros Ingresos vs Gastos</span>
+          </div>
+
+          <div class="pnl-bar-chart-container" id="pnl-bar-chart-container">
+            <!-- Barras comparativas minimalistas -->
+            <div class="pnl-chart-column">
+              <div class="pnl-chart-bar-wrap">
+                <div class="pnl-chart-bar bar-sales" id="chart-bar-sales" style="height: 10%;"></div>
+              </div>
+              <span class="pnl-chart-amount font-mono" id="chart-val-sales">$0</span>
+              <span class="pnl-chart-label">Ventas Papelería</span>
+            </div>
+
+            <div class="pnl-chart-column">
+              <div class="pnl-chart-bar-wrap">
+                <div class="pnl-chart-bar bar-other" id="chart-bar-other" style="height: 10%;"></div>
+              </div>
+              <span class="pnl-chart-amount font-mono" id="chart-val-other">$0</span>
+              <span class="pnl-chart-label">Otros Ingresos</span>
+            </div>
+
+            <div class="pnl-chart-column">
+              <div class="pnl-chart-bar-wrap">
+                <div class="pnl-chart-bar bar-expenses" id="chart-bar-expenses" style="height: 10%;"></div>
+              </div>
+              <span class="pnl-chart-amount font-mono" id="chart-val-expenses">$0</span>
+              <span class="pnl-chart-label">Gastos Totales</span>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+
+    <!-- Fixed Bottom Navigation Bar (4 Tabs) -->
+    <nav class="bottom-nav-bar">
+      <button class="nav-tab-btn active" data-tab="wallets">
+        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+          <line x1="2" y1="10" x2="22" y2="10"></line>
+        </svg>
+        <span class="tab-label">Billeteras</span>
+      </button>
+
+      <button class="nav-tab-btn" data-tab="papeleria">
+        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+        </svg>
+        <span class="tab-label">Papelería</span>
+      </button>
+
+      <button class="nav-tab-btn" data-tab="movimientos">
+        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+        </svg>
+        <span class="tab-label">Movimientos</span>
+      </button>
+
+      <button class="nav-tab-btn" data-tab="pnl">
+        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="20" x2="18" y2="10"></line>
+          <line x1="12" y1="20" x2="12" y2="4"></line>
+          <line x1="6" y1="20" x2="6" y2="14"></line>
+        </svg>
+        <span class="tab-label">PnL</span>
+      </button>
+    </nav>
+
+    <!-- Toast Notification Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- ===================================================================
+         MODAL 1: MOTOR DE CAMBIO P2P Y TRANSFERENCIAS INTERNAS
+         =================================================================== -->
+    <div class="modal-backdrop" id="modal-p2p">
+      <div class="modal-sheet">
+        <div class="modal-drag-handle"></div>
+        <div class="modal-header">
+          <div class="modal-title-wrap">
+            <div class="modal-icon-badge">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
+            </div>
+            <h3 class="modal-title">Motor de Cambio P2P</h3>
+          </div>
+          <button class="modal-btn-close" aria-label="Cerrar modal">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </div>
+
+        <form id="form-p2p">
+          <!-- Atajos Rápidos de Operación P2P / Transferencia -->
+          <div class="p2p-presets-row">
+            <button type="button" class="btn-p2p-preset font-mono" id="btn-preset-usdt-usdc">
+              <span style="color:#06B6D4;">🔒 1:1 USDT ↔ USDC (Earn)</span>
+            </button>
+            <button type="button" class="btn-p2p-preset font-mono" id="btn-preset-binance-banco">
+              <span style="color:var(--color-amber);">🔄 USDT → Banco (Bs)</span>
+            </button>
+          </div>
+
+          <!-- Cuenta Origen -->
+          <div class="form-group">
+            <div class="form-label-row">
+              <label class="form-label" for="p2p-origin-wallet">Cuenta de Origen (Entrega)</label>
+              <div class="form-helper-val">Disponible: <span class="font-mono" id="p2p-origin-available">0.00</span></div>
+            </div>
+            <select class="form-select font-mono" id="p2p-origin-wallet" required></select>
+          </div>
+
+          <!-- Monto a Enviar / Cambiar -->
+          <div class="form-group">
+            <div class="form-label-row">
+              <label class="form-label" for="p2p-origin-amount">Monto a Entregar</label>
+              <span class="form-helper-val">Atajos rápidos:</span>
+            </div>
+            <div class="input-with-addons">
+              <input type="number" step="any" min="0.01" class="form-input font-mono" id="p2p-origin-amount" placeholder="0.00" required>
+              <span class="input-addon-currency" id="p2p-origin-currency-addon">USDT</span>
+            </div>
+            <div class="percent-pills-row">
+              <button type="button" class="btn-percent-pill font-mono" data-pct="25">25%</button>
+              <button type="button" class="btn-percent-pill font-mono" data-pct="50">50%</button>
+              <button type="button" class="btn-percent-pill font-mono" data-pct="75">75%</button>
+              <button type="button" class="btn-percent-pill font-mono" data-pct="100">100% (MAX)</button>
+            </div>
+          </div>
+
+          <!-- Tasa Real de Ejecución P2P -->
+          <div class="form-group" id="p2p-rate-row">
+            <div class="form-label-row">
+              <label class="form-label" for="p2p-rate-input">Tasa de Ejecución Real (P2P)</label>
+              <button type="button" class="form-helper-val" id="btn-sync-criptoya" style="background:none;border:none;cursor:pointer;color:var(--color-amber);font-weight:600;">
+                ⟳ Sincronizar CriptoYA
+              </button>
+            </div>
+            <div class="input-with-addons">
+              <input type="number" step="any" min="0.01" class="form-input font-mono" id="p2p-rate-input" placeholder="Ej. 1029.00" required>
+              <span class="input-addon-currency">Bs/USDT</span>
+            </div>
+          </div>
+
+          <!-- Cuenta Destino -->
+          <div class="form-group">
+            <label class="form-label" for="p2p-dest-wallet">Cuenta Destino (Recibe)</label>
+            <select class="form-select font-mono" id="p2p-dest-wallet" required></select>
+          </div>
+
+          <!-- Monto Recibido en Destino -->
+          <div class="form-group">
+            <div class="form-label-row">
+              <label class="form-label" for="p2p-dest-amount">Monto a Recibir (Calculado / Editable)</label>
+            </div>
+            <div class="input-with-addons">
+              <input type="number" step="any" min="0.01" class="form-input font-mono" id="p2p-dest-amount" placeholder="0.00" required>
+              <span class="input-addon-currency" id="p2p-dest-currency-addon">Bs</span>
+            </div>
+          </div>
+
+          <!-- Notas Opcionales -->
+          <div class="form-group">
+            <label class="form-label" for="p2p-notes-input">Notas / Referencia (Opcional)</label>
+            <input type="text" class="form-input" id="p2p-notes-input" placeholder="Ej. Venta P2P Binance #8294">
+          </div>
+
+          <!-- Resumen Contable Limpio -->
+          <div class="conversion-summary-preview">
+            <div class="summary-preview-title">Impacto Contable Limpio (Sin P&amp;L)</div>
+            <div class="summary-row">
+              <span>Se debita de origen:</span>
+              <span class="font-mono text-coral" id="p2p-summary-debited">-0.00</span>
+            </div>
+            <div class="summary-row">
+              <span>Se acredita a destino:</span>
+              <span class="font-mono text-emerald" id="p2p-summary-credited">+0.00</span>
+            </div>
+            <div class="summary-row highlight">
+              <span>Tasa Real Aplicada:</span>
+              <span class="font-mono" id="p2p-summary-rate">--</span>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-primary-action btn-amber-action font-mono">
+            <span>Ejecutar Operación P2P</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- ===================================================================
+         MODAL 2: ARQUEO / AJUSTE MANUAL DE SALDO
+         =================================================================== -->
+    <div class="modal-backdrop" id="modal-arqueo">
+      <div class="modal-sheet">
+        <div class="modal-drag-handle"></div>
+        <div class="modal-header">
+          <div class="modal-title-wrap">
+            <div class="modal-icon-badge" style="color: var(--color-steel-blue);">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+            </div>
+            <div>
+              <h3 class="modal-title">Arqueo / Ajuste Manual</h3>
+              <span class="font-mono" id="arqueo-wallet-name" style="font-size:0.75rem; color:var(--color-text-secondary);">Cuenta</span>
+            </div>
+          </div>
+          <button class="modal-btn-close" aria-label="Cerrar modal">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </div>
+
+        <form id="form-arqueo">
+          <div class="form-group">
+            <div class="form-label-row">
+              <label class="form-label">Saldo Actual en Bóveda</label>
+              <span class="font-mono text-emerald" id="arqueo-current-balance">0.00</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="arqueo-new-balance">Nuevo Saldo Real Exacto</label>
+            <div class="input-with-addons">
+              <input type="number" step="any" min="0" class="form-input font-mono" id="arqueo-new-balance" placeholder="0.00" required>
+              <span class="input-addon-currency" id="arqueo-currency-label">USDT</span>
+            </div>
+            <div class="percent-pills-row" style="margin-top: 8px;">
+              <button type="button" class="btn-percent-pill btn-arqueo-quick font-mono" data-delta="10">+10</button>
+              <button type="button" class="btn-percent-pill btn-arqueo-quick font-mono" data-delta="50">+50</button>
+              <button type="button" class="btn-percent-pill btn-arqueo-quick font-mono" data-delta="100">+100</button>
+              <button type="button" class="btn-percent-pill btn-arqueo-quick font-mono" data-delta="-10">-10</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="form-label-row">
+              <label class="form-label">Variación resultante:</label>
+              <span id="arqueo-diff-preview" class="font-mono text-steel">Sin variación</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="arqueo-reason">Motivo / Detalle del Arqueo</label>
+            <input type="text" class="form-input" id="arqueo-reason" placeholder="Ej. Cuadre de caja inicial, sobrante, etc.">
+          </div>
+
+          <button type="submit" class="btn-primary-action font-mono">
+            <span>Guardar Saldo Real</span>
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- ===================================================================
+         MODAL 3: TASA REFERENCIAL CRIPTOYA / MANUAL
+         =================================================================== -->
+    <div class="modal-backdrop" id="modal-manual-rate">
+      <div class="modal-sheet">
+        <div class="modal-drag-handle"></div>
+        <div class="modal-header">
+          <div class="modal-title-wrap">
+            <div class="modal-icon-badge" style="color: var(--color-amber);">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            </div>
+            <h3 class="modal-title">Tasa Referencial P2P</h3>
+          </div>
+          <button class="modal-btn-close" aria-label="Cerrar modal">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </div>
+
+        <form id="form-manual-rate">
+          <div class="conversion-summary-preview" style="margin-bottom: 16px;">
+            <div class="summary-preview-title">Valores en Vivo CriptoYA (Binance P2P)</div>
+            <div class="summary-row">
+              <span>Ask (Compra):</span>
+              <span class="font-mono text-emerald" id="criptoya-ask-display">--.-- Bs</span>
+            </div>
+            <div class="summary-row">
+              <span>Bid (Venta):</span>
+              <span class="font-mono text-amber" id="criptoya-bid-display">--.-- Bs</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="manual-rate-input">Tasa Personalizada (Sobrescribir temporalmente)</label>
+            <div class="input-with-addons">
+              <input type="number" step="any" min="0.01" class="form-input font-mono" id="manual-rate-input" placeholder="0.00" required>
+              <span class="input-addon-currency">Bs/USDT</span>
+            </div>
+            <p style="font-size:0.72rem; color:var(--color-text-muted); margin-top:6px;">
+              Puedes fijar tu propia tasa de referencia o restaurar la alimentación automática de CriptoYA.
+            </p>
+          </div>
+
+          <button type="submit" class="btn-primary-action font-mono">
+            <span>Fijar Tasa Personalizada</span>
+          </button>
+
+          <button type="button" class="btn-secondary-action font-mono" id="btn-reset-criptoya">
+            <span>Restaurar Tasa Automática CriptoYA</span>
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- ===================================================================
+         MODAL 4: REGISTRAR USO / AJUSTAR FONDO DE PAPELERÍA (FASE 2)
+         =================================================================== -->
+    <div class="modal-backdrop" id="modal-fund-action">
+      <div class="modal-sheet">
+        <div class="modal-drag-handle"></div>
+        <div class="modal-header">
+          <div class="modal-title-wrap">
+            <div class="modal-icon-badge" style="color: var(--color-emerald);">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="7" width="20" height="14" rx="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+            </div>
+            <div>
+              <h3 class="modal-title" id="fund-action-title">Uso de Fondo</h3>
+              <span class="font-mono text-emerald" id="fund-action-subtitle" style="font-size:0.75rem;">Fondo</span>
+            </div>
+          </div>
+          <button class="modal-btn-close" aria-label="Cerrar modal">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </div>
+
+        <form id="form-fund-action">
+          <div class="conversion-summary-preview" style="margin-bottom: 16px;">
+            <div class="summary-preview-title">Saldo Acumulado en el Fondo</div>
+            <div class="summary-row">
+              <span>Disponible:</span>
+              <span class="font-mono text-emerald" id="fund-action-current-bal" style="font-size: 1.15rem; font-weight:800;">$ 0.00 USDT</span>
+            </div>
+            <div class="summary-row">
+              <span>Equivalente en Bs:</span>
+              <span class="font-mono text-amber" id="fund-action-current-ves">0.00 Bs</span>
+            </div>
+          </div>
+
+          <!-- Tipo de Acción -->
+          <div class="form-group">
+            <label class="form-label">Acción a realizar</label>
+            <div class="dest-options-pills" style="margin-bottom: 0;">
+              <button type="button" class="btn-dest-pill active" id="btn-fund-mode-discount">
+                💸 Descontar / Usar
+              </button>
+              <button type="button" class="btn-dest-pill" id="btn-fund-mode-reset">
+                🔄 Reiniciar Ciclo ($0)
+              </button>
+            </div>
+          </div>
+
+          <!-- Monto a Descontar -->
+          <div class="form-group" id="fund-action-amount-group">
+            <label class="form-label" for="fund-action-amount">Monto a Descontar (USDT)</label>
+            <div class="input-with-addons">
+              <input type="number" step="any" min="0.01" class="form-input font-mono" id="fund-action-amount" placeholder="0.00">
+              <span class="input-addon-currency">USDT</span>
+            </div>
+          </div>
+
+          <!-- Motivo / Concepto -->
+          <div class="form-group">
+            <label class="form-label" for="fund-action-reason">Concepto / Motivo</label>
+            <input type="text" class="form-input" id="fund-action-reason" placeholder="Ej. Pago mensual de alquiler local, compra resmas, etc." required>
+          </div>
+
+          <!-- Selector de Billetera Real de Origen (Fase 2.5) -->
+          <div class="form-group" id="fund-action-wallet-group">
+            <label class="form-label" for="fund-action-wallet-select">¿De qué cuenta real salió el pago?</label>
+            <div class="custom-select-wrap">
+              <select class="form-select font-mono" id="fund-action-wallet-select" required>
+                <!-- Renderizado dinámicamente por app.js -->
+              </select>
+            </div>
+            <div id="fund-action-wallet-hint" style="margin-top: 6px; font-size: 0.72rem; color: var(--color-text-muted); line-height: 1.35;">
+              Se descontará del sobre virtual y de tu cuenta real seleccionada.
+            </div>
+          </div>
+
+          <button type="submit" class="btn-primary-action font-mono" id="btn-fund-action-submit">
+            <span>Confirmar Descuento</span>
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- ===================================================================
+         MODAL 5: AJUSTES, RESPALDO & PWA (FASE 4)
+         =================================================================== -->
+    <div class="modal-backdrop" id="modal-settings">
+      <div class="modal-sheet">
+        <div class="modal-drag-handle"></div>
+        <div class="modal-header">
+          <div class="modal-title-wrap">
+            <div class="modal-icon-badge" style="color: var(--color-steel-blue);">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            </div>
+            <div>
+              <h3 class="modal-title">Ajustes &amp; Seguridad</h3>
+              <span class="font-mono text-steel" style="font-size:0.75rem;">Copia de Seguridad y Configuración PWA</span>
+            </div>
+          </div>
+          <button class="modal-btn-close" aria-label="Cerrar modal">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </div>
+
+        <div class="settings-modal-content" style="padding: 16px 0;">
+          <!-- Respaldo de Datos -->
+          <div class="settings-section">
+            <h4 class="settings-section-title" style="font-size:0.85rem; font-weight:700; color:var(--color-text-primary); margin-bottom:4px;">Respaldo Integral de Datos</h4>
+            <p class="settings-section-desc" style="font-size:0.72rem; color:var(--color-text-muted); line-height:1.4; margin-bottom:14px;">Descarga una copia completa en formato JSON o restaura tus billeteras, fondos y cierres al instante.</p>
+            <div class="settings-actions-grid" style="display:grid; grid-template-columns:1fr; gap:10px;">
+              <button type="button" class="btn-settings-action font-mono" id="btn-export-backup" style="display:flex; align-items:center; justify-content:center; gap:8px; padding:12px; background:var(--bg-surface-elevated); border:1px solid var(--border-subtle); border-radius:var(--radius-sm); color:var(--color-text-primary); font-weight:700; cursor:pointer;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                <span>📥 Exportar Backup (JSON)</span>
+              </button>
+              <button type="button" class="btn-settings-action font-mono" id="btn-trigger-import-backup" style="display:flex; align-items:center; justify-content:center; gap:8px; padding:12px; background:var(--bg-surface-elevated); border:1px solid var(--border-subtle); border-radius:var(--radius-sm); color:var(--color-steel-blue); font-weight:700; cursor:pointer;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                <span>📤 Importar / Restaurar Backup (JSON)</span>
+              </button>
+              <input type="file" id="input-import-backup" accept=".json" style="display: none;">
+            </div>
+          </div>
+
+          <!-- Estado PWA -->
+          <div class="settings-section" style="margin-top: 18px; border-top: 1px solid var(--border-subtle); padding-top: 14px;">
+            <h4 class="settings-section-title" style="font-size:0.85rem; font-weight:700; color:var(--color-text-primary); margin-bottom:6px;">Web App Progresiva (PWA)</h4>
+            <div class="pwa-status-box font-mono" style="display:flex; align-items:center; justify-content:space-between; background:var(--bg-surface-elevated); padding:10px 12px; border-radius:var(--radius-sm); border:1px solid var(--border-subtle); font-size:0.75rem;">
+              <span style="color:var(--color-emerald); font-weight:700;">✓ Offline Ready &amp; Standalone</span>
+              <span style="color:var(--color-text-dim);">Android 1-Hand</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Main ES Module Script -->
+  <script type="module" src="./js/app.js?v=4.1.0"></script>
+</body>
+</html>
