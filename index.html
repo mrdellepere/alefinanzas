@@ -193,40 +193,81 @@
           <!-- Renderizado dinámicamente por app.js -->
         </div>
 
-        <!-- Bóveda de los 6 Fondos (Sobres Virtuales) -->
+        <!-- Bóveda de los 6 Fondos (Presupuestos & Ahorros) -->
         <div class="section-header-row">
           <h2 class="section-title">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
-            Bóveda de los 6 Fondos (Sobres)
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="7" width="20" height="14" rx="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+            Bóveda de los 6 Fondos (Presupuestos &amp; Ahorros)
           </h2>
-          <span class="section-count-badge">100% Ventas</span>
+          <span class="section-count-badge font-mono">100% Ventas</span>
         </div>
 
-        <!-- Barra de Acción Rápida: Ejecutar Pase a Binance Ahorro (USDC - Earn) - Fase 2.5 -->
-        <div class="earn-quick-action-banner" id="earn-quick-action-banner">
-          <div class="earn-banner-top">
-            <div class="earn-banner-info">
-              <div class="earn-lock-badge">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-              </div>
-              <div class="earn-banner-titles">
-                <span class="earn-banner-title">Fondos de Ahorro Fijo (USDC)</span>
-                <span class="earn-banner-desc">Local (8%) + Vivienda y Servicios (18%) + Máquinas (10%) = 36%</span>
+        <!-- ===============================================================
+             SECCIÓN A: LIQUIDEZ OPERATIVA Y SEMANAL (64.0%)
+             =============================================================== -->
+        <div class="funds-section-block rotary-block">
+          <div class="funds-section-badge-bar">
+            <div class="funds-sec-title-group">
+              <span class="funds-sec-pill-icon">⚡</span>
+              <div>
+                <span class="funds-sec-tag-label">SECCIÓN A (64.0%)</span>
+                <h3 class="funds-sec-heading">Liquidez Operativa y Semanal</h3>
               </div>
             </div>
-            <div class="earn-banner-accumulated font-mono">
-              <span class="earn-accum-label">Acumulado</span>
-              <span class="earn-accum-val" id="earn-savings-accum-val">$ 0.00</span>
-            </div>
+            <span class="badge-mono text-emerald">USDT / Bs LÍQUIDO</span>
           </div>
-          <button type="button" class="btn-trigger-earn-pass font-mono" id="btn-trigger-earn-pass">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
-            <span>⚡ Ejecutar Pase a USDC Earn (1:1)</span>
-          </button>
+
+          <div class="funds-grid-rotary" id="funds-rotary-container">
+            <!-- 3 Cajas Rotativas renderizadas por app.js -->
+          </div>
+
+          <div class="funds-rotary-note-card font-mono">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--color-emerald); flex-shrink:0;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+            <span>Mantener líquido en Banco (Bs) o Binance (USDT) para gastos de la semana.</span>
+          </div>
         </div>
 
-        <div class="funds-grid" id="funds-grid-container">
-          <!-- Tarjetas de los 6 Fondos renderizadas por app.js -->
+        <!-- ===============================================================
+             SECCIÓN B: BÓVEDAS DE COMPROMISOS MENSUALES (36.0%)
+             =============================================================== -->
+        <div class="funds-section-block vault-block" style="margin-top: 22px;">
+          <div class="funds-section-badge-bar">
+            <div class="funds-sec-title-group">
+              <span class="funds-sec-pill-icon" style="color:#06B6D4;">🔒</span>
+              <div>
+                <span class="funds-sec-tag-label" style="color:#06B6D4;">SECCIÓN B (36.0%)</span>
+                <h3 class="funds-sec-heading">Bóvedas de Compromisos Mensuales</h3>
+              </div>
+            </div>
+            <span class="badge-mono text-cyan">USDC BINANCE EARN</span>
+          </div>
+
+          <!-- Barra de Acción Rápida: Ejecutar Pase a Binance Ahorro (USDC - Earn) -->
+          <div class="earn-quick-action-banner" id="earn-quick-action-banner">
+            <div class="earn-banner-top">
+              <div class="earn-banner-info">
+                <div class="earn-lock-badge">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                </div>
+                <div class="earn-banner-titles">
+                  <span class="earn-banner-title">Fondos de Ahorro Fijo (USDC)</span>
+                  <span class="earn-banner-desc">Local (8%) + Vivienda y Servicios (18%) + Máquinas (10%) = 36%</span>
+                </div>
+              </div>
+              <div class="earn-banner-accumulated font-mono">
+                <span class="earn-accum-label">Acumulado</span>
+                <span class="earn-accum-val" id="earn-savings-accum-val">$ 0.00</span>
+              </div>
+            </div>
+            <button type="button" class="btn-trigger-earn-pass font-mono" id="btn-trigger-earn-pass">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
+              <span>⚡ Ejecutar Pase a USDC Earn (1:1)</span>
+            </button>
+          </div>
+
+          <div class="funds-grid-vaults" id="funds-vaults-container">
+            <!-- 3 Bóvedas Mensuales renderizadas por app.js -->
+          </div>
         </div>
 
         <!-- Formulario Principal: Registrar Cierre del Día (Basado en POS) -->
@@ -323,69 +364,92 @@
               </div>
             </div>
 
-            <!-- Asistente de División Cripto del Cierre (USDT vs USDC) - Fase 2.5 -->
+            <!-- Asistente de División Cripto del Cierre (USDT vs USDC) -->
             <div class="crypto-assistant-card">
               <div class="crypto-assistant-header">
                 <span class="crypto-assistant-title">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color: #06B6D4;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                  Distribución Cripto del Cierre (USDT vs USDC)
+                  Resumen de Acción Inmediata (USDC vs USDT / Bs)
                 </span>
-                <span class="badge-mono" style="font-size:0.65rem; color:#06B6D4; font-weight:700;">GUÍA EJECUTIVA</span>
+                <span class="badge-mono" style="font-size:0.65rem; color:#06B6D4; font-weight:700;">ACCIÓN DEL CIERRE</span>
               </div>
 
               <div class="crypto-blocks-grid">
-                <!-- Bloque 1: USDC Binance Earn (36.0%) -->
+                <!-- Bloque 1: Pasar a USDC (Binance Earn) — Solo el 36.0% -->
                 <div class="crypto-block usdc-box">
                   <div class="crypto-block-head">
                     <span class="crypto-block-label">
                       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                      🔒 Monto a Convertir a USDC (Binance Earn)
+                      🔒 Pasar a USDC (Binance Earn) — Solo el 36.0%
                     </span>
                     <span class="crypto-block-pct-pill font-mono">36.0%</span>
                   </div>
-                  <div class="crypto-block-amount-main font-mono" id="crypto-guide-usdc-val">
-                    $ 0.00 USDC
+                  <div class="crypto-block-amounts-row">
+                    <div class="crypto-block-amount-main font-mono" id="crypto-guide-usdc-val">
+                      $ 0.00 USDC
+                    </div>
+                    <div class="crypto-block-amount-ves font-mono" id="crypto-guide-usdc-ves" style="font-size: 0.75rem; color: #67E8F9;">
+                      ≈ 0.00 Bs
+                    </div>
                   </div>
-                  <div style="font-size: 0.68rem; color: var(--color-text-secondary); margin-bottom: 2px;">
-                    Cambiar a USDC y meter en Earn (Compromisos Fijos - Cuota fija: $41.50/sem · $166.00/mes):
+                  <div class="crypto-block-action-note" style="font-size: 0.72rem; color: var(--color-text-secondary); margin-top: 2px;">
+                    Monto exacto a asegurar en USDC por el cierre de hoy (o acumulado para pasar a Earn):
                   </div>
                   <div class="crypto-subbreakdown-row font-mono">
                     <div class="crypto-subitem">
-                      <span>• Alquiler Local (8.0% - $50):</span>
+                      <span>• Alquiler Local (8.0%):</span>
                       <strong id="crypto-sub-local">$0.00</strong>
                     </div>
                     <div class="crypto-subitem">
-                      <span>• Vivienda y Servicios Fijos (18.0% - $116):</span>
+                      <span>• Vivienda y Servicios Fijos (18.0%):</span>
                       <strong id="crypto-sub-vivienda">$0.00</strong>
                     </div>
                     <div class="crypto-subitem">
-                      <span>• Máquinas &amp; Emergencias (10.0%):</span>
+                      <span>• Reserva Máquinas &amp; Emergencias (10.0%):</span>
                       <strong id="crypto-sub-maquinas">$0.00</strong>
                     </div>
                   </div>
+                  <div class="crypto-guide-footer-hint font-mono" style="font-size: 0.65rem; color: #A5F3FC; margin-top: 4px; padding-top: 4px; border-top: 1px dashed rgba(6, 182, 212, 0.2);">
+                    Cuota fija de ahorro: $41.50/sem ($166.00/mes)
+                  </div>
                 </div>
 
-                <!-- Bloque 2: USDT Operativo + Personal (64.0%) -->
+                <!-- Bloque 2: Dejar Líquido para la Semana (USDT o Bs en Banco) — El 64.0% -->
                 <div class="crypto-block usdt-box">
                   <div class="crypto-block-head">
                     <span class="crypto-block-label">
                       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-                      ⚡ Monto a Mantener en USDT (Operativo + Personal)
+                      ⚡ Dejar Líquido para la Semana (USDT o Bs en Banco) — El 64.0%
                     </span>
                     <span class="crypto-block-pct-pill font-mono">64.0%</span>
                   </div>
-                  <div class="crypto-block-amount-main font-mono" id="crypto-guide-usdt-val">
-                    $ 0.00 USDT
+                  <div class="crypto-block-amounts-row">
+                    <div class="crypto-block-amount-main font-mono" id="crypto-guide-usdt-val">
+                      $ 0.00 USDT
+                    </div>
+                    <div class="crypto-block-amount-ves font-mono" id="crypto-guide-usdt-ves" style="font-size: 0.75rem; color: #6EE7B7;">
+                      ≈ 0.00 Bs
+                    </div>
+                  </div>
+                  <div class="crypto-block-action-note" style="font-size: 0.72rem; color: var(--color-text-secondary); margin-top: 2px;">
+                    Este monto (40% Reposición + 19.5% Comida + 4.5% Entretenimiento) no se bloquea en USDC; puedes dejarlo en Bolívares en el Banco si tienes compras de insumos o mercado en los próximos días, o en USDT disponible.
                   </div>
                   <div class="crypto-subbreakdown-row font-mono">
                     <div class="crypto-subitem">
-                      <span><strong>• Capital de Trabajo (40.0%):</strong> Reposición</span>
+                      <span>• Caja de Reposición (40.0%):</span>
                       <strong class="text-steel" id="crypto-sub-reposicion">$0.00</strong>
                     </div>
                     <div class="crypto-subitem">
-                      <span><strong>• Cuenta Personal Libre (24.0%):</strong> Comida (19.5%) + Ocio (4.5%)</span>
-                      <strong class="text-emerald" id="crypto-sub-personal">$0.00</strong>
+                      <span>• Presupuesto Comida (19.5%):</span>
+                      <strong class="text-emerald" id="crypto-sub-comida">$0.00</strong>
                     </div>
+                    <div class="crypto-subitem">
+                      <span>• Disponible Entretenimiento (4.5%):</span>
+                      <strong class="text-amber" id="crypto-sub-ocio">$0.00</strong>
+                    </div>
+                  </div>
+                  <div class="crypto-guide-footer-hint font-mono" style="font-size: 0.65rem; color: #A7F3D0; margin-top: 4px; padding-top: 4px; border-top: 1px dashed rgba(16, 185, 129, 0.2);">
+                    Presupuesto rotativo semanal: ~$94.05/sem ($58.80 insumos + $28.65 comida + $6.60 ocio)
                   </div>
                 </div>
               </div>
@@ -1396,6 +1460,6 @@
   </div>
 
   <!-- Main ES Module Script -->
-  <script type="module" src="./js/app.js?v=4.1.0"></script>
+  <script type="module" src="./js/app.js?v=4.2.0"></script>
 </body>
 </html>

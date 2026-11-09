@@ -138,6 +138,8 @@ class AppController {
     this.fundsTotalUsdt = document.getElementById('funds-total-usdt');
     this.fundsTotalVes = document.getElementById('funds-total-ves');
     this.fundsGridContainer = document.getElementById('funds-grid-container');
+    this.fundsRotaryContainer = document.getElementById('funds-rotary-container');
+    this.fundsVaultsContainer = document.getElementById('funds-vaults-container');
 
     // Acción Rápida: Pase a Binance Ahorro (USDC - Earn) - Fase 2.5
     this.earnSavingsAccumVal = document.getElementById('earn-savings-accum-val');
@@ -161,13 +163,17 @@ class AppController {
     this.posMetricMarginPct = document.getElementById('pos-metric-margin-pct');
     this.fundsDistLiveList = document.getElementById('funds-dist-live-list');
 
-    // Asistente Cripto del Cierre (USDT vs USDC) - Fase 2.5
+    // Asistente Cripto del Cierre (USDT vs USDC) - Resumen de Acción Inmediata
     this.cryptoGuideUsdcVal = document.getElementById('crypto-guide-usdc-val');
+    this.cryptoGuideUsdcVes = document.getElementById('crypto-guide-usdc-ves');
     this.cryptoSubLocal = document.getElementById('crypto-sub-local');
     this.cryptoSubVivienda = document.getElementById('crypto-sub-vivienda');
     this.cryptoSubMaquinas = document.getElementById('crypto-sub-maquinas');
     this.cryptoGuideUsdtVal = document.getElementById('crypto-guide-usdt-val');
+    this.cryptoGuideUsdtVes = document.getElementById('crypto-guide-usdt-ves');
     this.cryptoSubReposicion = document.getElementById('crypto-sub-reposicion');
+    this.cryptoSubComida = document.getElementById('crypto-sub-comida');
+    this.cryptoSubOcio = document.getElementById('crypto-sub-ocio');
     this.cryptoSubPersonal = document.getElementById('crypto-sub-personal');
 
     // Destino del Dinero (Banco vs Mixto)
@@ -549,13 +555,16 @@ class AppController {
     }
 
     // Delegación de eventos en Bóveda de los 6 Fondos (Botón Usar / Ajustar)
-    this.fundsGridContainer.addEventListener('click', (e) => {
+    const onFundActionClick = (e) => {
       const btn = e.target.closest('.btn-fund-use');
       if (btn) {
         const fundId = btn.dataset.fundId;
         this.openFundActionModal(fundId);
       }
-    });
+    };
+    if (this.fundsRotaryContainer) this.fundsRotaryContainer.addEventListener('click', onFundActionClick);
+    if (this.fundsVaultsContainer) this.fundsVaultsContainer.addEventListener('click', onFundActionClick);
+    if (this.fundsGridContainer) this.fundsGridContainer.addEventListener('click', onFundActionClick);
 
     // Modal Fondos: Conmutador entre Descuento y Reinicio
     this.btnFundModeDiscount.addEventListener('click', () => {
@@ -1759,25 +1768,83 @@ class AppController {
     }).join('');
   }
   // =========================================================================
-  // RENDER BÓVEDA DE LOS 6 FONDOS (FASE 2)
+  // RENDER BÓVEDA DE LOS 6 FONDOS: SECCIÓN A (ROTATIVAS) & SECCIÓN B (MENSUALES)
   // =========================================================================
   renderFunds(funds) {
-    if (!this.fundsGridContainer) return;
     const rate = criptoYaService.getRate();
 
-    this.fundsGridContainer.innerHTML = funds.map(f => {
+    // 1. Filtrar en dos bloques claros:
+    // SECCIÓN A: Liquidez Operativa y Semanal (64.0% — Uso Diario/Semanal en USDT o Bs)
+    const rotaryFunds = funds.filter(f => f.categoryGroup === 'rotary_liquidity' || ['fondo_reposicion', 'fondo_comida_hogar', 'fondo_entretenimiento'].includes(f.id));
+    // SECCIÓN B: Bóvedas de Compromisos Mensuales (36.0% — Convertir a USDC Earn)
+    const vaultFunds = funds.filter(f => f.categoryGroup === 'monthly_vault' || ['fondo_alquiler_local', 'fondo_alquiler_vivienda', 'fondo_maquinas_emergencia'].includes(f.id));
+
+    // Renderizado SECCIÓN A (Tarjetas de Saldo Disponible en Tiempo Real con Presupuesto Semanal Referencial)
+    const rotaryHtml = rotaryFunds.map(f => {
       const balanceUsdt = f.balanceUsdt || 0;
       const balanceVes = balanceUsdt * rate;
 
-      // Barra de progreso si tiene meta mensual (Alquiler Local $50 / Vivienda $116)
+      let headlinePrefix = f.headlinePrefix || 'Disponible hoy:';
+      let refSemanal = f.weeklyBudgetUsdt ? `~$${f.weeklyBudgetUsdt.toFixed(2)}/sem` : '';
+      if (f.id === 'fondo_reposicion') {
+        headlinePrefix = 'Disponible hoy para comprar insumos:';
+        refSemanal = '~$58.80 / sem';
+      } else if (f.id === 'fondo_comida_hogar') {
+        headlinePrefix = 'Disponible hoy para mercado:';
+        refSemanal = '~$28.65 / sem';
+      } else if (f.id === 'fondo_entretenimiento') {
+        headlinePrefix = 'Disponible hoy:';
+        refSemanal = '~$6.60 / sem';
+      }
+
+      return `
+        <div class="fund-card rotary-card" data-fund-id="${f.id}" style="border-left: 3px solid ${f.color || 'var(--color-steel-blue)'};">
+          <div class="fund-card-top">
+            <div class="fund-card-icon-title">
+              <span class="fund-card-name">${f.shortName || f.name}</span>
+            </div>
+            <span class="fund-pct-tag font-mono text-emerald">${f.percentage.toFixed(1)}%</span>
+          </div>
+
+          <div class="fund-rotary-headline font-mono">
+            <span class="rotary-label-prefix">${headlinePrefix}</span>
+          </div>
+
+          <div class="fund-balance-display">
+            <span class="fund-balance-usdt font-mono text-emerald">$ ${this.formatMoney(balanceUsdt, 'USD', true)} <span style="font-size:0.75rem; color:var(--color-text-dim); font-weight:600;">USD</span></span>
+            <span class="fund-balance-ves font-mono">≈ ${this.formatMoney(balanceVes, 'VES', true)} Bs</span>
+          </div>
+
+          <div class="fund-ref-badge font-mono">
+            <span>Presupuesto ref: ${refSemanal}</span>
+          </div>
+
+          <button type="button" class="btn-fund-use" data-fund-id="${f.id}">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span>Usar / Ajustar</span>
+          </button>
+        </div>
+      `;
+    }).join('');
+
+    if (this.fundsRotaryContainer) {
+      this.fundsRotaryContainer.innerHTML = rotaryHtml;
+    }
+
+    // Renderizado SECCIÓN B (Bóvedas Mensuales con barras de progreso y cuota de ahorro en USDC Earn)
+    const vaultsHtml = vaultFunds.map(f => {
+      const balanceUsdt = f.balanceUsdt || 0;
+      const balanceVes = balanceUsdt * rate;
+
       let progressHtml = '';
       if (f.goalUsdt && f.goalUsdt > 0) {
         const pct = Math.min(100, Math.round((balanceUsdt / f.goalUsdt) * 100));
+        const remaining = Math.max(0, f.goalUsdt - balanceUsdt);
         progressHtml = `
           <div class="fund-goal-box">
-            <div class="fund-goal-label-row">
-              <span>Meta: $${f.goalUsdt.toFixed(2)}</span>
-              <span class="font-mono ${pct >= 100 ? 'text-emerald' : 'text-amber'}">${pct}%</span>
+            <div class="fund-goal-label-row font-mono">
+              <span>Meta mensual: $${f.goalUsdt.toFixed(2)}</span>
+              <span class="${pct >= 100 ? 'text-emerald' : 'text-amber'}">${pct}% (${remaining > 0 ? `Faltan $${remaining.toFixed(2)}` : '¡Cubierto!'})</span>
             </div>
             <div class="fund-progress-track">
               <div class="fund-progress-fill" style="width: ${pct}%; background-color: ${f.color || 'var(--color-steel-blue)'};"></div>
@@ -1790,7 +1857,7 @@ class AppController {
       let breakdownHtml = '';
       if (f.id === 'fondo_alquiler_vivienda') {
         breakdownHtml = `
-          <div class="fund-commitments-breakdown font-mono" style="margin-top: 8px; font-size: 0.65rem; color: var(--color-text-dim); background: rgba(255,255,255,0.03); border-radius: 6px; padding: 6px 8px; border: 1px solid rgba(255,255,255,0.06);">
+          <div class="fund-commitments-breakdown font-mono" style="margin-top: 6px; margin-bottom: 6px; font-size: 0.65rem; color: var(--color-text-dim); background: rgba(255,255,255,0.03); border-radius: 6px; padding: 6px 8px; border: 1px solid rgba(255,255,255,0.06);">
             <div style="font-weight: 600; color: #C4B5FD; margin-bottom: 3px; font-family: var(--font-sans);">Gastos Fijos Cubiertos ($116/mes):</div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2px 6px;">
               <span>🏠 Casa: $65</span>
@@ -1802,22 +1869,35 @@ class AppController {
         `;
       }
 
+      // Badge de contingencia para Máquinas y Emergencias
+      let contingencyHtml = '';
+      if (f.id === 'fondo_maquinas_emergencia') {
+        contingencyHtml = `
+          <div class="fund-contingency-badge font-mono">
+            🛡️ Saldo acumulado de contingencia (Plotter, repuestos técnicos, imprevistos)
+          </div>
+        `;
+      }
+
+      const goalDisplay = f.goalUsdt ? ` <span style="font-size:0.75rem; color:var(--color-text-muted);">/ $${f.goalUsdt.toFixed(2)}</span>` : '';
+
       return `
-        <div class="fund-card" data-fund-id="${f.id}" style="border-left: 3px solid ${f.color || 'var(--color-steel-blue)'};">
+        <div class="fund-card vault-card" data-fund-id="${f.id}" style="border-left: 3px solid ${f.color || 'var(--color-steel-blue)'};">
           <div class="fund-card-top">
             <div class="fund-card-icon-title">
               <span class="fund-card-name">${f.shortName || f.name}</span>
             </div>
-            <span class="fund-pct-tag font-mono">${f.percentage.toFixed(1)}%</span>
+            <span class="fund-pct-tag font-mono text-cyan">${f.percentage.toFixed(1)}%</span>
           </div>
 
           <div class="fund-balance-display">
-            <span class="fund-balance-usdt font-mono">$ ${this.formatMoney(balanceUsdt, 'USD', true)}</span>
+            <span class="fund-balance-usdt font-mono">$ ${this.formatMoney(balanceUsdt, 'USD', true)}${goalDisplay}</span>
             <span class="fund-balance-ves font-mono">≈ ${this.formatMoney(balanceVes, 'VES', true)} Bs</span>
           </div>
 
           ${progressHtml}
           ${breakdownHtml}
+          ${contingencyHtml}
 
           <button type="button" class="btn-fund-use" data-fund-id="${f.id}">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
@@ -1826,6 +1906,26 @@ class AppController {
         </div>
       `;
     }).join('');
+
+    if (this.fundsVaultsContainer) {
+      this.fundsVaultsContainer.innerHTML = vaultsHtml;
+    }
+
+    // Compatibilidad en caso de contenedor unificado
+    if (this.fundsGridContainer) {
+      this.fundsGridContainer.innerHTML = rotaryHtml + vaultsHtml;
+    }
+
+    // Actualizar acumulado de los 3 fondos de ahorro fijo (Local + Casa/Servicios + Máquinas)
+    const fLocal = funds.find(f => f.id === 'fondo_alquiler_local');
+    const fVivienda = funds.find(f => f.id === 'fondo_alquiler_vivienda');
+    const fMaquinas = funds.find(f => f.id === 'fondo_maquinas_emergencia');
+    const savingsTotalUsdt = (fLocal ? fLocal.balanceUsdt || 0 : 0) +
+                             (fVivienda ? fVivienda.balanceUsdt || 0 : 0) +
+                             (fMaquinas ? fMaquinas.balanceUsdt || 0 : 0);
+    if (this.earnSavingsAccumVal) {
+      this.earnSavingsAccumVal.textContent = `$ ${savingsTotalUsdt.toFixed(2)}`;
+    }
 
     // Renderizar tarjeta maestra de balance exclusivo del negocio
     this.renderBusinessVault();
@@ -1988,25 +2088,36 @@ class AppController {
     // 3. Grilla de la Regla de los 6 Fondos
     this.renderLiveFundsDistribution(salesGrossUsdt, salesGrossVes, directCostUsdt);
 
-    // 4. Asistente Cripto del Cierre (USDT vs USDC) - Fase 2.5 & Recalibración
+    // 4. Asistente Cripto del Cierre (USDT vs USDC) - Resumen de Acción Inmediata
     const usdcEarnTotal = salesGrossUsdt * 0.36; // 36.0%
+    const usdcEarnVes = salesGrossVes * 0.36;
     const subLocal = salesGrossUsdt * 0.08; // 8.0%
     const subVivienda = salesGrossUsdt * 0.18; // 18.0%
     const subMaquinas = salesGrossUsdt * 0.10; // 10.0%
 
     const usdtTotal = salesGrossUsdt * 0.64; // 64.0%
+    const usdtVes = salesGrossVes * 0.64;
     const subReposicion = salesGrossUsdt * 0.40; // 40.0%
-    const subPersonal = salesGrossUsdt * 0.24; // 24.0% (Comida 19.5% + Ocio 4.5%)
+    const subComida = salesGrossUsdt * 0.195; // 19.5%
+    const subOcio = salesGrossUsdt * 0.045; // 4.5%
 
     if (this.cryptoGuideUsdcVal) {
       this.cryptoGuideUsdcVal.textContent = `$ ${usdcEarnTotal.toFixed(2)} USDC`;
-      this.cryptoSubLocal.textContent = `$${subLocal.toFixed(2)}`;
-      this.cryptoSubVivienda.textContent = `$${subVivienda.toFixed(2)}`;
-      this.cryptoSubMaquinas.textContent = `$${subMaquinas.toFixed(2)}`;
+      if (this.cryptoGuideUsdcVes) {
+        this.cryptoGuideUsdcVes.textContent = `≈ ${this.formatMoney(usdcEarnVes, 'VES')} Bs`;
+      }
+      if (this.cryptoSubLocal) this.cryptoSubLocal.textContent = `$${subLocal.toFixed(2)}`;
+      if (this.cryptoSubVivienda) this.cryptoSubVivienda.textContent = `$${subVivienda.toFixed(2)}`;
+      if (this.cryptoSubMaquinas) this.cryptoSubMaquinas.textContent = `$${subMaquinas.toFixed(2)}`;
 
       this.cryptoGuideUsdtVal.textContent = `$ ${usdtTotal.toFixed(2)} USDT`;
-      this.cryptoSubReposicion.textContent = `$${subReposicion.toFixed(2)}`;
-      this.cryptoSubPersonal.textContent = `$${subPersonal.toFixed(2)}`;
+      if (this.cryptoGuideUsdtVes) {
+        this.cryptoGuideUsdtVes.textContent = `≈ ${this.formatMoney(usdtVes, 'VES')} Bs`;
+      }
+      if (this.cryptoSubReposicion) this.cryptoSubReposicion.textContent = `$${subReposicion.toFixed(2)}`;
+      if (this.cryptoSubComida) this.cryptoSubComida.textContent = `$${subComida.toFixed(2)}`;
+      if (this.cryptoSubOcio) this.cryptoSubOcio.textContent = `$${subOcio.toFixed(2)}`;
+      if (this.cryptoSubPersonal) this.cryptoSubPersonal.textContent = `$${(subComida + subOcio).toFixed(2)}`;
     }
 
     // 5. Si el modo es mixto, validar balance
@@ -2026,17 +2137,17 @@ class AppController {
       let subNote = '';
       if (f.id === 'fondo_reposicion') {
         const excessUsdt = Math.max(0, amountUsdt - directCostUsdt);
-        subNote = `(Consumo POS: $${directCostUsdt.toFixed(2)} | Excedente: $${excessUsdt.toFixed(2)})`;
+        subNote = `(Rotativo: ~$58.80/sem | Consumo POS: $${directCostUsdt.toFixed(2)} | Excedente: $${excessUsdt.toFixed(2)})`;
       } else if (f.id === 'fondo_alquiler_local') {
-        subNote = `(Meta: $50.00/mes)`;
+        subNote = `(Bóveda Mensual · Meta: $50.00/mes USDC Earn)`;
       } else if (f.id === 'fondo_alquiler_vivienda') {
-        subNote = `(Meta: $116.00/mes · Casa, Net, Pills, Tel)`;
+        subNote = `(Bóveda Mensual · Meta: $116.00/mes USDC Earn)`;
       } else if (f.id === 'fondo_comida_hogar') {
-        subNote = `(Ref: $124.20/mes · Mercado y hogar)`;
+        subNote = `(Rotativo: ~$28.65/sem · Mercado y alimentación)`;
       } else if (f.id === 'fondo_maquinas_emergencia') {
-        subNote = `(Plotter, impresoras e imprevistos)`;
+        subNote = `(Bóveda Mensual · Saldo contingencia)`;
       } else if (f.id === 'fondo_entretenimiento') {
-        subNote = `(Ref: $28.65/mes · Disfrute personal)`;
+        subNote = `(Rotativo: ~$6.60/sem · Recreación y ocio)`;
       }
 
       return `
@@ -2353,7 +2464,17 @@ class AppController {
 
     this.activeFundActionId = fund.id;
     this.fundActionTitle.textContent = `Uso de Fondo: ${fund.shortName || fund.name}`;
-    this.fundActionSubtitle.textContent = `${fund.percentage.toFixed(1)}% de Ventas · ${fund.description}`;
+    
+    const isRotary = fund.categoryGroup === 'rotary_liquidity' || ['fondo_reposicion', 'fondo_comida_hogar', 'fondo_entretenimiento'].includes(fund.id);
+    if (isRotary) {
+      this.fundActionSubtitle.textContent = `${fund.percentage.toFixed(1)}% · Caja Rotativa de Saldo Continuo`;
+      this.btnFundModeDiscount.innerHTML = `<span>💸 Registrar Gasto / Salida</span>`;
+      this.btnFundModeReset.innerHTML = `<span>🔄 Ajustar Saldo a $0</span>`;
+    } else {
+      this.fundActionSubtitle.textContent = `${fund.percentage.toFixed(1)}% · Bóveda de Compromiso Mensual (USDC Earn)`;
+      this.btnFundModeDiscount.innerHTML = `<span>💸 Descontar Pago del Mes</span>`;
+      this.btnFundModeReset.innerHTML = `<span>🔄 Reiniciar Ciclo Mensual ($0)</span>`;
+    }
 
     const rate = criptoYaService.getRate();
     const balUsdt = fund.balanceUsdt || 0;
@@ -2393,13 +2514,16 @@ class AppController {
 
   setFundActionMode(mode) {
     this.fundActionMode = mode;
+    const fund = storageService.getFund(this.activeFundActionId);
+    const isRotary = fund && (fund.categoryGroup === 'rotary_liquidity' || ['fondo_reposicion', 'fondo_comida_hogar', 'fondo_entretenimiento'].includes(fund.id));
+
     if (mode === 'discount') {
       this.btnFundModeDiscount.classList.add('active');
       this.btnFundModeReset.classList.remove('active');
       this.fundActionAmountGroup.classList.remove('hidden');
       if (this.fundActionWalletGroup) this.fundActionWalletGroup.classList.remove('hidden');
       this.fundActionAmountInput.setAttribute('required', 'required');
-      this.btnFundActionSubmit.innerHTML = `<span>Confirmar Descuento</span>`;
+      this.btnFundActionSubmit.innerHTML = isRotary ? `<span>Confirmar Gasto / Salida</span>` : `<span>Confirmar Pago de Compromiso</span>`;
       this.updateFundActionWalletHint();
     } else {
       this.btnFundModeDiscount.classList.remove('active');
@@ -2407,8 +2531,8 @@ class AppController {
       this.fundActionAmountGroup.classList.add('hidden');
       if (this.fundActionWalletGroup) this.fundActionWalletGroup.classList.add('hidden');
       this.fundActionAmountInput.removeAttribute('required');
-      this.fundActionReasonInput.value = 'Reinicio de ciclo mensual';
-      this.btnFundActionSubmit.innerHTML = `<span>Reiniciar Ciclo a $0.00</span>`;
+      this.fundActionReasonInput.value = isRotary ? 'Ajuste / Cuadre de saldo rotativo' : 'Pago realizado / Reinicio de ciclo mensual';
+      this.btnFundActionSubmit.innerHTML = isRotary ? `<span>Ajustar Saldo a $0.00</span>` : `<span>Reiniciar Ciclo a $0.00</span>`;
     }
   }
 
