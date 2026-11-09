@@ -275,7 +275,7 @@ input[type="number"],
 }
 
 .hero-amount-primary {
-  font-size: 2.1rem;
+  font-size: 1.8rem;
   font-weight: 800;
   color: #FFFFFF;
   margin-bottom: 4px;
@@ -575,7 +575,7 @@ input[type="number"],
 }
 
 .wallet-balance-num {
-  font-size: 1.45rem;
+  font-size: 1.25rem;
   font-weight: 800;
   color: #FFFFFF;
   letter-spacing: -0.02em;
@@ -2364,7 +2364,7 @@ input[type="number"],
 }
 
 .business-vault-amount-usd {
-  font-size: 1.45rem;
+  font-size: 1.8rem;
   font-weight: 800;
   color: var(--color-text-primary);
   line-height: 1.1;
@@ -3261,7 +3261,7 @@ input[type="number"],
 }
 
 .pnl-cashflow-usd {
-  font-size: 1.6rem;
+  font-size: 1.8rem;
   font-weight: 900;
 }
 
@@ -3458,6 +3458,468 @@ input[type="number"],
   color: var(--color-text-muted);
   text-align: center;
   font-weight: 600;
+}
+
+/* ==========================================================================
+   FASE 5: UI DECLUTTERING & VISUAL DENSITY REFACTORING
+   ========================================================================== */
+
+/* 1. Global Currency Switcher ($ USD ⇄ Bs) */
+.currency-global-toggle {
+  display: inline-flex;
+  align-items: center;
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-full);
+  padding: 2px;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.btn-curr-global {
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-full);
+  color: var(--color-text-dim);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 4px 8px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  line-height: 1;
+}
+
+.btn-curr-global:hover {
+  color: var(--color-text-primary);
+}
+
+.btn-curr-global.active {
+  background: var(--color-emerald);
+  color: #032014;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.35);
+}
+
+body.currency-mode-ves .btn-curr-global[data-curr="VES"].active {
+  background: var(--color-amber);
+  color: #241400;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.35);
+}
+
+/* UI Decluttering: Ocultar textos secundarios de conversión a Bolívares en modo USD */
+body.currency-mode-usd .secondary-currency-ves:not(.always-visible) {
+  display: none !important;
+}
+
+body.currency-mode-ves .secondary-currency-ves {
+  display: inline-block;
+}
+
+/* 2. Botón de Acción Principal: Registrar Cierre de Hoy */
+.closure-hero-cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.12) 0%, rgba(19, 23, 32, 0.95) 100%);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  gap: 12px;
+}
+
+.closure-cta-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.closure-cta-icon {
+  color: var(--color-amber);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(245, 158, 11, 0.15);
+  border-radius: var(--radius-sm);
+  padding: 6px;
+  flex-shrink: 0;
+}
+
+.closure-cta-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.closure-cta-title {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+.closure-cta-desc {
+  font-size: 0.72rem;
+  color: var(--color-amber);
+}
+
+/* 3. Grid Compacto 2x3 de los 6 Fondos */
+.funds-compact-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.compact-fund-card {
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all var(--transition-fast);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.compact-fund-card:hover,
+.compact-fund-card:active {
+  border-color: rgba(255, 255, 255, 0.22);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+}
+
+.compact-fund-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.compact-fund-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.compact-fund-icon {
+  font-size: 1.05rem;
+  flex-shrink: 0;
+}
+
+.compact-fund-name {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.compact-fund-pct {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.05);
+  flex-shrink: 0;
+}
+
+.compact-fund-body {
+  display: flex;
+  flex-direction: column;
+}
+
+.compact-fund-label {
+  font-size: 0.65rem;
+  color: var(--color-text-muted);
+  margin-bottom: 2px;
+}
+
+.compact-fund-amount {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+.compact-fund-goal {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.compact-fund-sub {
+  font-size: 0.68rem;
+  color: var(--color-amber);
+  margin-top: 2px;
+}
+
+.compact-fund-progress-track {
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+.compact-fund-progress-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+/* 4. Modal Daily Closure & Action Summary & Collapsible */
+.modal-sheet-large {
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.closure-modal-form {
+  padding-bottom: 20px;
+}
+
+.closure-action-summary-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.closure-summary-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.closure-summary-header .action-badge-tag {
+  font-size: 0.65rem;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+}
+
+.closure-action-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.03);
+  gap: 10px;
+}
+
+.closure-action-item.usdc {
+  border-left: 3px solid #06B6D4;
+}
+
+.closure-action-item.usdt {
+  border-left: 3px solid #10B981;
+}
+
+.closure-action-item-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.closure-action-icon {
+  font-size: 1.1rem;
+}
+
+.closure-action-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.closure-action-desc {
+  font-size: 0.65rem;
+  color: var(--color-text-muted);
+}
+
+.closure-action-item-right {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.closure-action-main {
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.closure-action-ves {
+  font-size: 0.65rem;
+  color: var(--color-amber);
+}
+
+.closure-breakdown-collapsible-section {
+  margin-bottom: 14px;
+}
+
+.btn-toggle-funds-breakdown {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: transparent;
+  border: 1px dashed var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  color: var(--color-text-secondary);
+  font-size: 0.72rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-toggle-funds-breakdown:hover {
+  border-color: var(--color-text-muted);
+  color: var(--color-text-primary);
+}
+
+.btn-toggle-funds-breakdown .chevron-icon {
+  transition: transform 0.2s ease;
+}
+
+.btn-toggle-funds-breakdown.expanded .chevron-icon {
+  transform: rotate(180deg);
+}
+
+.closure-funds-collapsible.collapsed {
+  display: none;
+}
+
+.closure-funds-collapsible {
+  margin-top: 10px;
+}
+
+/* 5. Acordeones PnL en 3 Niveles Plegables */
+.pnl-tier-accordion {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  transition: border-color var(--transition-fast);
+  margin-bottom: 12px;
+}
+
+.pnl-tier-accordion .pnl-tier-header {
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  transition: background var(--transition-fast);
+}
+
+.pnl-tier-accordion .pnl-tier-header:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.pnl-tier-header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pnl-tier-header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pnl-tier-header-summary {
+  text-align: right;
+}
+
+.pnl-tier-sum-label {
+  font-size: 0.65rem;
+  color: var(--color-text-muted);
+  display: block;
+}
+
+.pnl-tier-sum-val {
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.pnl-tier-sum-ves {
+  font-size: 0.65rem;
+  color: var(--color-amber);
+  display: block;
+}
+
+.btn-tier-toggle {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-full);
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  pointer-events: none;
+  transition: all var(--transition-fast);
+}
+
+.tier-chevron {
+  transition: transform 0.25s ease;
+}
+
+.pnl-tier-accordion.collapsed .tier-chevron {
+  transform: rotate(0deg);
+}
+
+.pnl-tier-accordion.expanded .tier-chevron {
+  transform: rotate(180deg);
+}
+
+.pnl-tier-accordion.collapsed .pnl-tier-body {
+  display: none;
+}
+
+.pnl-tier-accordion.expanded .pnl-tier-body {
+  display: block;
+  padding: 0 14px 14px 14px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+/* 6. Fund Inspector Details inside Modal */
+.fund-detail-box {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  font-size: 0.72rem;
+  color: var(--color-text-secondary);
+}
+
+.fund-detail-header {
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: 6px;
+}
+
+.fund-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.fund-detail-pill {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 4px;
+  padding: 4px 6px;
+  font-size: 0.7rem;
 }
 
 

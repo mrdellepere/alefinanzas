@@ -1,4 +1,4 @@
-const CACHE_NAME = 'alefinanzas-v4.2.0';
+const CACHE_NAME = 'alefinanzas-v5.0.0';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',

@@ -20,12 +20,16 @@ class AppController {
     this.closureDestinationMode = 'banco_direct'; // 'banco_direct' | 'mixed'
     this.activeFundActionId = null;
     this.fundActionMode = 'discount'; // 'discount' | 'reset'
+
+    // Estado Fase 5: Conmutador Global de Moneda (UI Decluttering)
+    this.globalCurrency = localStorage.getItem('alefinanzas_global_currency') || 'USD';
   }
 
   async init() {
-    console.log('[AleFinanzas] Iniciando sistema Fintech Terminal (Fase 1 + Fase 2)...');
+    console.log('[AleFinanzas] Iniciando sistema Fintech Terminal (Fase 1 a Fase 5)...');
     
     this.bindDOM();
+    this.applyGlobalCurrency(this.globalCurrency);
     this.setupEventListeners();
     this.setupNavigation();
     
@@ -78,6 +82,9 @@ class AppController {
     this.rateDot = document.getElementById('rate-pulse-dot');
     this.rateValueText = document.getElementById('rate-value-text');
     this.btnRefreshRate = document.getElementById('btn-refresh-rate');
+    this.currencyToggle = document.getElementById('currency-global-toggle');
+    this.btnCurrUsd = this.currencyToggle ? this.currencyToggle.querySelector('[data-curr="USD"]') : null;
+    this.btnCurrVes = this.currencyToggle ? this.currencyToggle.querySelector('[data-curr="VES"]') : null;
 
     // Hero Total (Patrimonio)
     this.heroTotalUsd = document.getElementById('hero-total-usd');
@@ -145,7 +152,11 @@ class AppController {
     this.earnSavingsAccumVal = document.getElementById('earn-savings-accum-val');
     this.btnTriggerEarnPass = document.getElementById('btn-trigger-earn-pass');
 
-    // Formulario de Cierre Diario
+    // Formulario & Modal de Cierre Diario (Fase 5)
+    this.btnOpenClosureModal = document.getElementById('btn-open-closure-modal');
+    this.modalDailyClosure = document.getElementById('modal-daily-closure');
+    this.btnToggleFundsBreakdown = document.getElementById('btn-toggle-funds-breakdown');
+    this.closureFundsCollapsible = document.getElementById('closure-funds-collapsible');
     this.formDailyClosure = document.getElementById('form-daily-closure');
     this.closureDateInput = document.getElementById('closure-date');
     this.closureSalesGrossVesInput = document.getElementById('closure-sales-gross-ves');
@@ -207,6 +218,7 @@ class AppController {
     this.fundActionWalletGroup = document.getElementById('fund-action-wallet-group');
     this.fundActionWalletSelect = document.getElementById('fund-action-wallet-select');
     this.fundActionWalletHint = document.getElementById('fund-action-wallet-hint');
+    this.fundActionInspectorBox = document.getElementById('fund-action-inspector-box');
     this.btnFundActionSubmit = document.getElementById('btn-fund-action-submit');
 
     // Tarjeta Maestra de Balance Exclusivo de la Papelería (A&R Prints)
@@ -275,6 +287,9 @@ class AppController {
     this.pnlNavPeriodLabel = document.getElementById('pnl-nav-period-label');
 
     // Nivel 1 PnL
+    this.pnlTier1 = document.getElementById('pnl-tier-1');
+    this.pnlN1HeaderGrossMargin = document.getElementById('pnl-n1-header-gross-margin');
+    this.pnlN1HeaderGrossMarginVes = document.getElementById('pnl-n1-header-gross-margin-ves');
     this.pnlN1GrossSalesUsd = document.getElementById('pnl-n1-gross-sales-usd');
     this.pnlN1GrossSalesVes = document.getElementById('pnl-n1-gross-sales-ves');
     this.pnlN1CogsUsd = document.getElementById('pnl-n1-cogs-usd');
@@ -284,6 +299,9 @@ class AppController {
     this.pnlN1MarginPct = document.getElementById('pnl-n1-margin-pct');
 
     // Nivel 2 PnL
+    this.pnlTier2 = document.getElementById('pnl-tier-2');
+    this.pnlN2HeaderNet = document.getElementById('pnl-n2-header-net');
+    this.pnlN2HeaderNetVes = document.getElementById('pnl-n2-header-net-ves');
     this.pnlN2FixedReservesUsd = document.getElementById('pnl-n2-fixed-reserves-usd');
     this.pnlN2FixedReservesVes = document.getElementById('pnl-n2-fixed-reserves-ves');
     this.pnlN2NetUsd = document.getElementById('pnl-n2-net-usd');
@@ -291,6 +309,9 @@ class AppController {
     this.pnlN2NetPct = document.getElementById('pnl-n2-net-pct');
 
     // Nivel 3 PnL
+    this.pnlTier3 = document.getElementById('pnl-tier-3');
+    this.pnlN3HeaderFlow = document.getElementById('pnl-n3-header-flow');
+    this.pnlN3HeaderFlowVes = document.getElementById('pnl-n3-header-flow-ves');
     this.pnlN3PaperProfitUsd = document.getElementById('pnl-n3-paper-profit-usd');
     this.pnlN3PaperProfitVes = document.getElementById('pnl-n3-paper-profit-ves');
     this.pnlN3OtherIncomeUsd = document.getElementById('pnl-n3-other-income-usd');
@@ -352,6 +373,14 @@ class AppController {
   }
 
   setupEventListeners() {
+    // Conmutador Global de Moneda ($ USD ⇄ Bs) (Requirement 1)
+    if (this.btnCurrUsd) {
+      this.btnCurrUsd.addEventListener('click', () => this.setGlobalCurrency('USD'));
+    }
+    if (this.btnCurrVes) {
+      this.btnCurrVes.addEventListener('click', () => this.setGlobalCurrency('VES'));
+    }
+
     // Tasa Widget
     this.ratePill.addEventListener('click', () => this.openManualRateModal());
     this.btnRefreshRate.addEventListener('click', (e) => {
@@ -505,6 +534,19 @@ class AppController {
     // =======================================================================
     // EVENT LISTENERS FASE 2: PAPELERÍA & 6 FONDOS
     // =======================================================================
+    // Botón de Apertura de Cierre Diario en Modal (Requirement 2)
+    if (this.btnOpenClosureModal) {
+      this.btnOpenClosureModal.addEventListener('click', () => {
+        this.openModal(this.modalDailyClosure);
+      });
+    }
+
+    if (this.btnToggleFundsBreakdown) {
+      this.btnToggleFundsBreakdown.addEventListener('click', () => {
+        this.toggleClosureFundsBreakdown();
+      });
+    }
+
     // Cálculos en vivo mientras se escribe en el cierre del POS
     this.closureSalesGrossVesInput.addEventListener('input', () => {
       this.updateClosureLiveCalculations();
@@ -554,12 +596,12 @@ class AppController {
       });
     }
 
-    // Delegación de eventos en Bóveda de los 6 Fondos (Botón Usar / Ajustar)
+    // Delegación de eventos en Bóveda de los 6 Fondos (Tap-to-Inspect en Tarjeta Completa - Requirement 3)
     const onFundActionClick = (e) => {
-      const btn = e.target.closest('.btn-fund-use');
-      if (btn) {
-        const fundId = btn.dataset.fundId;
-        this.openFundActionModal(fundId);
+      const targetCard = e.target.closest('.compact-fund-card, .fund-card, .btn-fund-use');
+      if (targetCard) {
+        const fundId = targetCard.dataset.fundId;
+        if (fundId) this.openFundActionModal(fundId);
       }
     };
     if (this.fundsRotaryContainer) this.fundsRotaryContainer.addEventListener('click', onFundActionClick);
@@ -1075,6 +1117,17 @@ class AppController {
         this.navigatePnlPeriod(1);
       });
     }
+
+    // Acordeones PnL en 3 Niveles Plegables (Requirement 4)
+    document.querySelectorAll('.pnl-tier-accordion .pnl-tier-header').forEach(header => {
+      header.addEventListener('click', () => {
+        const tier = header.closest('.pnl-tier-accordion');
+        if (tier) {
+          tier.classList.toggle('expanded');
+          tier.classList.toggle('collapsed');
+        }
+      });
+    });
   }
 
   setPnlPeriodType(type) {
@@ -1096,6 +1149,47 @@ class AppController {
       this.pnlCurrentAnchorDate.setMonth(this.pnlCurrentAnchorDate.getMonth() + direction);
     }
     this.renderPnlDashboard();
+  }
+
+  // =========================================================================
+  // CONTROLADOR GLOBAL DE MONEDA & DECLUTTERING (FASE 5)
+  // =========================================================================
+  setGlobalCurrency(currency) {
+    this.globalCurrency = currency;
+    localStorage.setItem('alefinanzas_global_currency', currency);
+    this.applyGlobalCurrency(currency);
+    this.recalculateAll();
+    this.renderFunds(storageService.getFunds());
+    this.renderPnlDashboard();
+    this.showToast(`Visualización cambiada a: ${currency === 'USD' ? '$ USD (Limpio)' : 'Bolívares (Bs)'}`, 'success');
+  }
+
+  applyGlobalCurrency(currency) {
+    if (currency === 'USD') {
+      document.body.classList.add('currency-mode-usd');
+      document.body.classList.remove('currency-mode-ves');
+      if (this.btnCurrUsd) this.btnCurrUsd.classList.add('active');
+      if (this.btnCurrVes) this.btnCurrVes.classList.remove('active');
+    } else {
+      document.body.classList.add('currency-mode-ves');
+      document.body.classList.remove('currency-mode-usd');
+      if (this.btnCurrUsd) this.btnCurrUsd.classList.remove('active');
+      if (this.btnCurrVes) this.btnCurrVes.classList.add('active');
+    }
+  }
+
+  toggleClosureFundsBreakdown() {
+    if (!this.closureFundsCollapsible || !this.btnToggleFundsBreakdown) return;
+    const isCollapsed = this.closureFundsCollapsible.classList.contains('collapsed');
+    if (isCollapsed) {
+      this.closureFundsCollapsible.classList.remove('collapsed');
+      this.btnToggleFundsBreakdown.classList.add('expanded');
+      this.btnToggleFundsBreakdown.querySelector('span').textContent = 'Ocultar desglose de los 6 fondos';
+    } else {
+      this.closureFundsCollapsible.classList.add('collapsed');
+      this.btnToggleFundsBreakdown.classList.remove('expanded');
+      this.btnToggleFundsBreakdown.querySelector('span').textContent = 'Ver desglose de los 6 fondos';
+    }
   }
 
   handleExportBackup() {
@@ -1215,6 +1309,8 @@ class AppController {
     if (this.pnlN1GrossMarginUsd) this.pnlN1GrossMarginUsd.textContent = `$ ${this.formatMoney(grossMarginUsd, 'USD', true)}`;
     if (this.pnlN1GrossMarginVes) this.pnlN1GrossMarginVes.textContent = `≈ ${this.formatMoney(grossMarginVes, 'VES', true)} Bs`;
     if (this.pnlN1MarginPct) this.pnlN1MarginPct.textContent = `${grossMarginPct.toFixed(1)}%`;
+    if (this.pnlN1HeaderGrossMargin) this.pnlN1HeaderGrossMargin.textContent = `$ ${this.formatMoney(grossMarginUsd, 'USD', true)}`;
+    if (this.pnlN1HeaderGrossMarginVes) this.pnlN1HeaderGrossMarginVes.textContent = `≈ ${this.formatMoney(grossMarginVes, 'VES', true)} Bs`;
 
     // =======================================================================
     // NIVEL 2: UTILIDAD NETA DEL NEGOCIO
@@ -1233,6 +1329,8 @@ class AppController {
     if (this.pnlN2NetUsd) this.pnlN2NetUsd.textContent = `$ ${this.formatMoney(netPaperUsd, 'USD', true)}`;
     if (this.pnlN2NetVes) this.pnlN2NetVes.textContent = `≈ ${this.formatMoney(netPaperVes, 'VES', true)} Bs`;
     if (this.pnlN2NetPct) this.pnlN2NetPct.textContent = `${netPaperPct.toFixed(1)}%`;
+    if (this.pnlN2HeaderNet) this.pnlN2HeaderNet.textContent = `$ ${this.formatMoney(netPaperUsd, 'USD', true)}`;
+    if (this.pnlN2HeaderNetVes) this.pnlN2HeaderNetVes.textContent = `≈ ${this.formatMoney(netPaperVes, 'VES', true)} Bs`;
 
     // =======================================================================
     // NIVEL 3: FLUJO CONSOLIDADO INTEGRAL (PAPELERÍA + OTROS INGRESOS - GASTOS)
@@ -1319,6 +1417,12 @@ class AppController {
       this.pnlCashflowDesc.textContent = isSurplus
         ? `Ahorro neto consolidado generado en el período tras cubrir todos tus gastos personales.`
         : `Tus gastos personales superaron la utilidad combinada de la papelería y otros ingresos.`;
+    }
+    if (this.pnlN3HeaderFlow) {
+      this.pnlN3HeaderFlow.textContent = `${isSurplus ? '+' : ''}$ ${this.formatMoney(netCashFlowUsd, 'USD', true)}`;
+    }
+    if (this.pnlN3HeaderFlowVes) {
+      this.pnlN3HeaderFlowVes.textContent = `≈ ${this.formatMoney(netCashFlowVes, 'VES', true)} Bs`;
     }
 
     // =======================================================================
@@ -1690,7 +1794,7 @@ class AppController {
 
           <div class="wallet-equivalent-row">
             <span>Valuación:</span>
-            <span class="approx-val font-mono">${equivalentText}</span>
+            <span class="approx-val font-mono ${w.currency === 'VES' ? 'always-visible' : 'secondary-currency-ves'}">${equivalentText}</span>
           </div>
 
           ${binanceSubdivisionHtml}
@@ -1768,7 +1872,7 @@ class AppController {
     }).join('');
   }
   // =========================================================================
-  // RENDER BÓVEDA DE LOS 6 FONDOS: SECCIÓN A (ROTATIVAS) & SECCIÓN B (MENSUALES)
+  // RENDER BÓVEDA DE LOS 6 FONDOS: GRID COMPACTO 2x3 (FASE 5 DECLUTTERING)
   // =========================================================================
   renderFunds(funds) {
     const rate = criptoYaService.getRate();
@@ -1779,50 +1883,31 @@ class AppController {
     // SECCIÓN B: Bóvedas de Compromisos Mensuales (36.0% — Convertir a USDC Earn)
     const vaultFunds = funds.filter(f => f.categoryGroup === 'monthly_vault' || ['fondo_alquiler_local', 'fondo_alquiler_vivienda', 'fondo_maquinas_emergencia'].includes(f.id));
 
-    // Renderizado SECCIÓN A (Tarjetas de Saldo Disponible en Tiempo Real con Presupuesto Semanal Referencial)
+    // Renderizado SECCIÓN A (Tarjetas Compactas - Cero texto de relleno - Requirement 3)
     const rotaryHtml = rotaryFunds.map(f => {
       const balanceUsdt = f.balanceUsdt || 0;
       const balanceVes = balanceUsdt * rate;
 
-      let headlinePrefix = f.headlinePrefix || 'Disponible hoy:';
-      let refSemanal = f.weeklyBudgetUsdt ? `~$${f.weeklyBudgetUsdt.toFixed(2)}/sem` : '';
-      if (f.id === 'fondo_reposicion') {
-        headlinePrefix = 'Disponible hoy para comprar insumos:';
-        refSemanal = '~$58.80 / sem';
-      } else if (f.id === 'fondo_comida_hogar') {
-        headlinePrefix = 'Disponible hoy para mercado:';
-        refSemanal = '~$28.65 / sem';
-      } else if (f.id === 'fondo_entretenimiento') {
-        headlinePrefix = 'Disponible hoy:';
-        refSemanal = '~$6.60 / sem';
-      }
+      let icon = '⚡';
+      if (f.id === 'fondo_reposicion') icon = '📦';
+      else if (f.id === 'fondo_comida_hogar') icon = '🛒';
+      else if (f.id === 'fondo_entretenimiento') icon = '🎉';
 
       return `
-        <div class="fund-card rotary-card" data-fund-id="${f.id}" style="border-left: 3px solid ${f.color || 'var(--color-steel-blue)'};">
-          <div class="fund-card-top">
-            <div class="fund-card-icon-title">
-              <span class="fund-card-name">${f.shortName || f.name}</span>
+        <div class="compact-fund-card rotary-card" data-fund-id="${f.id}" style="border-left: 3px solid ${f.color || 'var(--color-steel-blue)'};" title="Toca para ver desglose y usar este fondo">
+          <div class="compact-fund-top">
+            <div class="compact-fund-title">
+              <span class="compact-fund-icon">${icon}</span>
+              <span class="compact-fund-name">${f.shortName || f.name}</span>
             </div>
-            <span class="fund-pct-tag font-mono text-emerald">${f.percentage.toFixed(1)}%</span>
+            <span class="compact-fund-pct font-mono text-emerald">${f.percentage.toFixed(1)}%</span>
           </div>
 
-          <div class="fund-rotary-headline font-mono">
-            <span class="rotary-label-prefix">${headlinePrefix}</span>
+          <div class="compact-fund-body">
+            <span class="compact-fund-label">Disponible hoy:</span>
+            <div class="compact-fund-amount font-mono text-emerald">$ ${this.formatMoney(balanceUsdt, 'USD', true)}</div>
+            <div class="compact-fund-sub secondary-currency-ves font-mono">≈ ${this.formatMoney(balanceVes, 'VES', true)} Bs</div>
           </div>
-
-          <div class="fund-balance-display">
-            <span class="fund-balance-usdt font-mono text-emerald">$ ${this.formatMoney(balanceUsdt, 'USD', true)} <span style="font-size:0.75rem; color:var(--color-text-dim); font-weight:600;">USD</span></span>
-            <span class="fund-balance-ves font-mono">≈ ${this.formatMoney(balanceVes, 'VES', true)} Bs</span>
-          </div>
-
-          <div class="fund-ref-badge font-mono">
-            <span>Presupuesto ref: ${refSemanal}</span>
-          </div>
-
-          <button type="button" class="btn-fund-use" data-fund-id="${f.id}">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-            <span>Usar / Ajustar</span>
-          </button>
         </div>
       `;
     }).join('');
@@ -1831,78 +1916,42 @@ class AppController {
       this.fundsRotaryContainer.innerHTML = rotaryHtml;
     }
 
-    // Renderizado SECCIÓN B (Bóvedas Mensuales con barras de progreso y cuota de ahorro en USDC Earn)
+    // Renderizado SECCIÓN B (Bóvedas Mensuales Compactas con Barra de 4px - Requirement 3)
     const vaultsHtml = vaultFunds.map(f => {
       const balanceUsdt = f.balanceUsdt || 0;
       const balanceVes = balanceUsdt * rate;
 
-      let progressHtml = '';
+      let icon = '🔒';
+      if (f.id === 'fondo_alquiler_local') icon = '🏠';
+      else if (f.id === 'fondo_alquiler_vivienda') icon = '🏡';
+      else if (f.id === 'fondo_maquinas_emergencia') icon = '🛠️';
+
+      let goalStr = '';
+      let pct = 0;
       if (f.goalUsdt && f.goalUsdt > 0) {
-        const pct = Math.min(100, Math.round((balanceUsdt / f.goalUsdt) * 100));
-        const remaining = Math.max(0, f.goalUsdt - balanceUsdt);
-        progressHtml = `
-          <div class="fund-goal-box">
-            <div class="fund-goal-label-row font-mono">
-              <span>Meta mensual: $${f.goalUsdt.toFixed(2)}</span>
-              <span class="${pct >= 100 ? 'text-emerald' : 'text-amber'}">${pct}% (${remaining > 0 ? `Faltan $${remaining.toFixed(2)}` : '¡Cubierto!'})</span>
-            </div>
-            <div class="fund-progress-track">
-              <div class="fund-progress-fill" style="width: ${pct}%; background-color: ${f.color || 'var(--color-steel-blue)'};"></div>
-            </div>
-          </div>
-        `;
+        pct = Math.min(100, Math.round((balanceUsdt / f.goalUsdt) * 100));
+        const goalFormatted = f.goalUsdt % 1 === 0 ? f.goalUsdt.toFixed(0) : f.goalUsdt.toFixed(2);
+        goalStr = ` <span class="compact-fund-goal font-mono text-muted">/ $${goalFormatted}</span>`;
       }
-
-      // Desglose visual exclusivo para Vivienda y Servicios Fijos ($116)
-      let breakdownHtml = '';
-      if (f.id === 'fondo_alquiler_vivienda') {
-        breakdownHtml = `
-          <div class="fund-commitments-breakdown font-mono" style="margin-top: 6px; margin-bottom: 6px; font-size: 0.65rem; color: var(--color-text-dim); background: rgba(255,255,255,0.03); border-radius: 6px; padding: 6px 8px; border: 1px solid rgba(255,255,255,0.06);">
-            <div style="font-weight: 600; color: #C4B5FD; margin-bottom: 3px; font-family: var(--font-sans);">Gastos Fijos Cubiertos ($116/mes):</div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2px 6px;">
-              <span>🏠 Casa: $65</span>
-              <span>🌐 Net: $30</span>
-              <span>💊 Pastillas: $15</span>
-              <span>📱 Tel: $6</span>
-            </div>
-          </div>
-        `;
-      }
-
-      // Badge de contingencia para Máquinas y Emergencias
-      let contingencyHtml = '';
-      if (f.id === 'fondo_maquinas_emergencia') {
-        contingencyHtml = `
-          <div class="fund-contingency-badge font-mono">
-            🛡️ Saldo acumulado de contingencia (Plotter, repuestos técnicos, imprevistos)
-          </div>
-        `;
-      }
-
-      const goalDisplay = f.goalUsdt ? ` <span style="font-size:0.75rem; color:var(--color-text-muted);">/ $${f.goalUsdt.toFixed(2)}</span>` : '';
 
       return `
-        <div class="fund-card vault-card" data-fund-id="${f.id}" style="border-left: 3px solid ${f.color || 'var(--color-steel-blue)'};">
-          <div class="fund-card-top">
-            <div class="fund-card-icon-title">
-              <span class="fund-card-name">${f.shortName || f.name}</span>
+        <div class="compact-fund-card vault-card" data-fund-id="${f.id}" style="border-left: 3px solid ${f.color || 'var(--color-cyan)'};" title="Toca para ver desglose y usar este fondo">
+          <div class="compact-fund-top">
+            <div class="compact-fund-title">
+              <span class="compact-fund-icon">${icon}</span>
+              <span class="compact-fund-name">${f.shortName || f.name}</span>
             </div>
-            <span class="fund-pct-tag font-mono text-cyan">${f.percentage.toFixed(1)}%</span>
+            <span class="compact-fund-pct font-mono text-cyan">${f.percentage.toFixed(1)}%</span>
           </div>
 
-          <div class="fund-balance-display">
-            <span class="fund-balance-usdt font-mono">$ ${this.formatMoney(balanceUsdt, 'USD', true)}${goalDisplay}</span>
-            <span class="fund-balance-ves font-mono">≈ ${this.formatMoney(balanceVes, 'VES', true)} Bs</span>
+          <div class="compact-fund-body">
+            <div class="compact-fund-amount font-mono">$ ${this.formatMoney(balanceUsdt, 'USD', true)}${goalStr}</div>
+            <div class="compact-fund-sub secondary-currency-ves font-mono">≈ ${this.formatMoney(balanceVes, 'VES', true)} Bs</div>
           </div>
 
-          ${progressHtml}
-          ${breakdownHtml}
-          ${contingencyHtml}
-
-          <button type="button" class="btn-fund-use" data-fund-id="${f.id}">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-            <span>Usar / Ajustar</span>
-          </button>
+          <div class="compact-fund-progress-track">
+            <div class="compact-fund-progress-fill" style="width: ${pct}%; background-color: ${f.color || 'var(--color-cyan)'};"></div>
+          </div>
         </div>
       `;
     }).join('');
@@ -1973,7 +2022,7 @@ class AppController {
             <div class="business-vault-amount-usd font-mono text-emerald">
               $ ${this.formatMoney(totalBusinessUsd, 'USD', true)} <span style="font-size:0.8rem; font-weight:600; color:var(--color-text-muted);">USD</span>
             </div>
-            <div class="business-vault-amount-ves font-mono">
+            <div class="business-vault-amount-ves font-mono secondary-currency-ves">
               ≈ ${this.formatMoney(totalBusinessVes, 'VES', true)} Bs
             </div>
           </div>
@@ -1992,7 +2041,7 @@ class AppController {
               <div class="business-vault-item-balance font-mono">
                 $ ${this.formatMoney(repoBal, 'USD', true)}
               </div>
-              <div class="business-vault-item-sub font-mono">
+              <div class="business-vault-item-sub font-mono secondary-currency-ves">
                 ≈ ${this.formatMoney(repoBal * rate, 'VES', true)} Bs
               </div>
             </div>
@@ -2013,7 +2062,7 @@ class AppController {
               <div class="business-vault-item-balance font-mono">
                 $ ${this.formatMoney(maquinasBal, 'USD', true)}
               </div>
-              <div class="business-vault-item-sub font-mono">
+              <div class="business-vault-item-sub font-mono secondary-currency-ves">
                 ≈ ${this.formatMoney(maquinasBal * rate, 'VES', true)} Bs
               </div>
             </div>
@@ -2032,9 +2081,9 @@ class AppController {
                 <span class="business-vault-item-pill pill-usdc-earn font-mono">USDC Earn (8%)</span>
               </div>
               <div class="business-vault-item-balance font-mono">
-                $ ${this.formatMoney(localBal, 'USD', true)} <span style="font-size:0.75rem; color:var(--color-text-muted);">/ $50.00</span>
+                $ ${this.formatMoney(localBal, 'USD', true)} <span style="font-size:0.75rem; color:var(--color-text-muted);">/ $50</span>
               </div>
-              <div class="business-vault-item-sub font-mono">
+              <div class="business-vault-item-sub font-mono secondary-currency-ves">
                 ≈ ${this.formatMoney(localBal * rate, 'VES', true)} Bs
               </div>
             </div>
@@ -2044,7 +2093,7 @@ class AppController {
               </div>
               <div class="mini-progress-label font-mono">
                 <span>Avance: ${localPct}%</span>
-                <span>${localRemaining > 0 ? `Faltan $${localRemaining.toFixed(2)}` : '¡Meta 100% lista!'}</span>
+                <span>${localRemaining > 0 ? (localRemaining % 1 === 0 ? `Faltan $${localRemaining.toFixed(0)}` : `Faltan $${localRemaining.toFixed(2)}`) : '¡Meta 100% lista!'}</span>
               </div>
             </div>
           </div>
@@ -2321,6 +2370,7 @@ class AppController {
       this.closureNotesInput.value = '';
       this.updateClosureLiveCalculations();
       this.setClosureDestinationMode('banco_direct');
+      this.closeAllModals();
     } catch (err) {
       this.showToast(err.message, 'error');
     }
@@ -2508,6 +2558,54 @@ class AppController {
     this.fundActionReasonInput.value = '';
     this.setFundActionMode('discount');
     this.updateFundActionWalletHint();
+
+    // Inspector Detallado del Fondo (Requirement 3: Tap-to-Inspect)
+    if (this.fundActionInspectorBox) {
+      let inspectorContent = '';
+      if (fund.id === 'fondo_alquiler_vivienda') {
+        inspectorContent = `
+          <div class="fund-detail-box font-mono">
+            <div class="fund-detail-header">Gastos Fijos Cubiertos ($116/mes):</div>
+            <div class="fund-detail-grid">
+              <div class="fund-detail-pill">🏠 Alquiler Casa: $65</div>
+              <div class="fund-detail-pill">🌐 Internet Fibra: $30</div>
+              <div class="fund-detail-pill">💊 Pastillas Anticonceptivas: $15</div>
+              <div class="fund-detail-pill">📱 Renta Telefónica: $6</div>
+            </div>
+          </div>
+        `;
+      } else if (fund.id === 'fondo_alquiler_local') {
+        inspectorContent = `
+          <div class="fund-detail-box font-mono">
+            <div class="fund-detail-header">Canon de Arrendamiento:</div>
+            <p style="margin:0; font-size:0.7rem; color:var(--color-text-muted);">Meta mensual fija de $50/mes para local comercial A&R Prints. Cuota acumulada en USDC Binance Earn.</p>
+          </div>
+        `;
+      } else if (fund.id === 'fondo_maquinas_emergencia') {
+        inspectorContent = `
+          <div class="fund-detail-box font-mono">
+            <div class="fund-detail-header">Reserva Técnica y Contingencias:</div>
+            <p style="margin:0; font-size:0.7rem; color:var(--color-text-muted);">Fondo del 10% para reposición o mantenimiento de plotter, cabezales, tintas y soporte técnico.</p>
+          </div>
+        `;
+      } else if (isRotary) {
+        let note = '';
+        if (fund.id === 'fondo_reposicion') {
+          note = 'Reposición continua de insumos y mercancía POS. Presupuesto semanal referencial: ~$58.80 / sem (40% de ventas).';
+        } else if (fund.id === 'fondo_comida_hogar') {
+          note = 'Presupuesto de mercado y despensa diaria. Presupuesto semanal referencial: ~$28.65 / sem (19.5% de ventas).';
+        } else {
+          note = 'Presupuesto de recreación y ocio personal. Presupuesto semanal referencial: ~$6.60 / sem (4.5% de ventas).';
+        }
+        inspectorContent = `
+          <div class="fund-detail-box font-mono">
+            <div class="fund-detail-header">Caja Rotativa de Liquidez Continua:</div>
+            <p style="margin:0; font-size:0.7rem; color:var(--color-text-muted);">${note}</p>
+          </div>
+        `;
+      }
+      this.fundActionInspectorBox.innerHTML = inspectorContent;
+    }
 
     this.openModal(this.modalFundAction);
   }
